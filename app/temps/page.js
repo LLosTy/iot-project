@@ -51,8 +51,8 @@ export default async function TempsPage(){
             {/*        <div>{temp.payload}</div>*/}
             {/*        ))}*/}
 
-            {testArr}
-            {console.log(testArr)}
+            {/*{testArr}*/}
+            {/*{console.log(testArr)}*/}
             {/*{tempsArr}*/}
             {/*{testArr}*/}
             <LineChart
