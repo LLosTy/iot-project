@@ -1,27 +1,11 @@
-// pages/temps.js
 // app/temps/page.js
 'use client'
 // import Temperature from '/models/temperature'
-// import {useState} from "react";
+import { useState, useEffect } from "react";
 import { LineChart } from '@mui/x-charts/LineChart';
+import { GetTemps, GetTempsByDate } from '../lib/actions'
 
 
-
-const GetTemps = async () => {
-    try{
-        const res = await fetch("http://localhost:3000/api/temps", {
-            cache: "no-store",
-        })
-        // const testArr =[]
-        // res.forEach((i) => testArr.push(i.payload))
-        // return testArr
-
-        // console.log(res)
-        return res.json();
-    }catch (err){
-        console.log(err)
-    }
-}
 // const test = (x) =>{
 //     let array = []
 //     x.forEach((i) => array.push(i.payload))
@@ -29,11 +13,25 @@ const GetTemps = async () => {
 //     return array
 //     // console.log("Test: ",x[0])
 // }
-export default async function TempsPage(){
-    // const [temps, setTemps] = useState([])
-    const {temps} = await GetTemps()
+
+export default function TempsPage(){
+    const [temps, setTemps] = useState([])
+    const [temps2, setTemps2] = useState([])
+    let testArr = []
+    let temps2Array = []
+
+    
+    if (temps !== undefined){
+        testArr = temps.map(i => i.payload);
+    }
+
+    if (temps2 !== undefined) {
+        temps2Array = temps2.map(i => i.payload);
+    }
+
+    // const {temps} = GetTemps()
     // const testArr = temps.forEach((i) => testArr.push(i.payload))
-    const testArr = temps.map(i => i.payload);
+    
     // const [ arraytemps ] = toArray(temps)
     // let tempsArr = []
     // tempsArr = toArray(temps)
@@ -42,6 +40,28 @@ export default async function TempsPage(){
     // temps = await GetTemps();
 // const data = await Temps.find().limit(20)
 //     const temps = await GetTemps();
+
+    useEffect(() => {
+        const dateRange = "2024-02-20_to_2024-03-15"
+        /*
+        (async () => {
+            const fetchedTemps = await GetTemps();
+            setTemps(fetchedTemps);
+        })();
+        */
+        const fetchTemps = async () => {
+            const fetchedTemps = await GetTemps();
+            setTemps(fetchedTemps);
+            
+            const fetchedTemps2 = await GetTempsByDate(dateRange);
+            console.log(fetchedTemps2)
+            setTemps2(fetchedTemps2);
+        }
+
+        fetchTemps();
+    }, [])
+
+    
     return (
         <div>
             <h1>Latest Temperatures</h1>
@@ -61,6 +81,9 @@ export default async function TempsPage(){
              series={[{data: testArr}]}
                 height={400}
             />
+
+            
+
         </div>
 
     );
