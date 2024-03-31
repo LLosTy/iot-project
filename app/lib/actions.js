@@ -16,11 +16,12 @@ export const GetTemps = async () => {
     }
 }
 
-export const GetTempsByDate = async (dateRange) => {
-    console.log(dateRange)
+export const GetTempsByDate = async (dateFrom, dateTo) => {
+    console.log(dateFrom)
+    console.log(dateTo)
 
     try{
-        const res2 = await fetch(`http://localhost:3000/api/temps/${dateRange}`, {
+        const res2 = await fetch(`http://localhost:3000/api/temps?dateFrom=${dateFrom}&dateTo=${dateTo}`, {
             cache: "no-store",
         });
         if (!res2.ok) {

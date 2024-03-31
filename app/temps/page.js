@@ -43,6 +43,8 @@ export default function TempsPage(){
 
     useEffect(() => {
         const dateRange = "2024-02-20_to_2024-03-15"
+        const dateFrom = "2024-02-20"
+        const dateTo = "2024-03-15"
         /*
         (async () => {
             const fetchedTemps = await GetTemps();
@@ -53,7 +55,7 @@ export default function TempsPage(){
             const fetchedTemps = await GetTemps();
             setTemps(fetchedTemps);
             
-            const fetchedTemps2 = await GetTempsByDate(dateRange);
+            const fetchedTemps2 = await GetTempsByDate(dateFrom, dateTo);
             console.log(fetchedTemps2)
             setTemps2(fetchedTemps2);
         }
