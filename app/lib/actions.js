@@ -17,21 +17,27 @@ export const GetTemps = async () => {
 }
 
 export const GetTempsByDate = async (dateFrom, dateTo) => {
-    console.log(dateFrom)
-    console.log(dateTo)
-
     try{
-        const res2 = await fetch(`http://localhost:3000/api/temps?dateFrom=${dateFrom}&dateTo=${dateTo}`, {
+        const res = await fetch(`http://localhost:3000/api/temps?dateFrom=${dateFrom}&dateTo=${dateTo}`, {
             cache: "no-store",
         });
-        if (!res2.ok) {
-            // Log error response or handle accordingly
-            console.error('Fetch error:', await res2.text());
-            return;
-        }
-        //console.log(res2)
-        const data = await res2.json()
 
+        const data = await res.json()
+        return data.temps;
+
+    } catch (err){
+        console.log(err)
+        throw new Error("Error fetching Temps from Database! \n" + err.message)
+    }
+}
+
+export const GetTempsByIotId = async (iotId) => {
+    try{
+        const res = await fetch(`http://localhost:3000/api/temps?iot=${iotId}`, {
+            cache: "no-store",
+        });
+
+        const data = await res.json()
         return data.temps;
 
     } catch (err){
