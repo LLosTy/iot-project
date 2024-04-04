@@ -6,7 +6,6 @@ import { URL, URLSearchParams } from 'url';
 
 export async function GET(req){
     await connectMongoDB();
-
     try {
         const myUrl = new URL(req.url)
         const dateFrom = myUrl.searchParams.get("dateFrom")

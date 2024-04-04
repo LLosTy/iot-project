@@ -1,3 +1,4 @@
+
 // app/temps/page.js
 'use client'
 // import Temperature from '/models/temperature'
@@ -90,5 +91,3 @@ export default function TempsPage(){
 
     );
 };
-
-// export default TempsPage;
