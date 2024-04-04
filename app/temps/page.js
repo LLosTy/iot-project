@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { LineChart } from '@mui/x-charts/LineChart';
 import { GetTemps, GetTempsByDate } from '../lib/actions'
+import TempLineChart from '../../components/TempLineChart'
 
 
 // const test = (x) =>{
@@ -78,12 +79,14 @@ export default function TempsPage(){
             {/*{console.log(testArr)}*/}
             {/*{tempsArr}*/}
             {/*{testArr}*/}
-            <LineChart
-                xAxis={[{ scaleType: 'point', data: Array.from(Array(testArr.length).keys())}]}
-                // series={[{data}]}
-             series={[{data: testArr}]}
-                height={400}
-            />
+            {/*<LineChart*/}
+            {/*    xAxis={[{ scaleType: 'point', data: Array.from(Array(testArr.length).keys())}]}*/}
+            {/*    // series={[{data}]}*/}
+            {/* series={[{data: testArr}]}*/}
+            {/*    height={400}*/}
+            {/*/>*/}
+
+            <TempLineChart rawTemperatures={temps}/>
 
             
 
