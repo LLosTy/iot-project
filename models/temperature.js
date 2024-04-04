@@ -1,14 +1,22 @@
 import mongoose, {Schema} from "mongoose";
 
 const temperatureSchema = new Schema({
-    _id: Schema.Types.ObjectId,
     topic: String,
-    payload: Number,
+    payload: {
+        type: Number,
+        require: true
+    },
     qos: Number,
     retain: Boolean,
     _msgid: String,
-    timestamp: Date,
-    hardwareId: Number
+    timestamp: {
+        type: Date,
+        require: true
+    },
+    hardwareId: {
+        type: Number,
+        require: true
+    }
 })
 const Temperature = mongoose.models.Temperature || mongoose.model("Temperature", temperatureSchema, 'temperatures')
 // const Temperature = mongoose.model('Temperature', temperatureSchema, 'temperatures');
