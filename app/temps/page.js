@@ -14,18 +14,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 
-
-// const test = (x) =>{
-//     let array = []
-//     x.forEach((i) => array.push(i.payload))
-//     console.log(array)
-//     return array
-//     // console.log("Test: ",x[0])
-// }
-
 export default function TempsPage(){
-    const [temps, setTemps]  = useState([])
+    const [temps, setTemps] = useState([])
     const [temps2, setTemps2] = useState([])
+    const [dateFrom, setDateFrom] = useState(dayjs())
+    const [dateTo, setDateTo] = useState(dayjs())
     let testArr = []
     let temps2Array = []
 
@@ -38,75 +31,59 @@ export default function TempsPage(){
         temps2Array = temps2.map(i => i.payload);
     }
 
-    // const {temps} = GetTemps()
-    // const testArr = temps.forEach((i) => testArr.push(i.payload))
-    
-    // const [ arraytemps ] = toArray(temps)
-    // let tempsArr = []
-    // tempsArr = toArray(temps)
-    // setTemps(await GetTemps())
-    // let temps = []
-    // temps = await GetTemps();
-// const data = await Temps.find().limit(20)
-//     const temps = await GetTemps();
+    function handleDateFromChange(event) {
+        setDateFrom(event.target.value)
+    }
+    function handleDateToChange(event) {
+        setDateTo(event.target.value)
+    }
 
     useEffect(() => {
-        const dateRange = "2024-02-20_to_2024-03-15"
-        const dateFrom = "2024-02-20"
-        const dateTo = "2024-03-15"
-        /*
-        (async () => {
-            const fetchedTemps = await GetTemps();
-            setTemps(fetchedTemps);
-        })();
-        */
         const fetchTemps = async () => {
             const fetchedTemps = await GetTemps();
             setTemps(fetchedTemps);
+        }
 
+        fetchTemps();
+    }, [])
+
+    useEffect(() => {
+        const dateFrom = "2024-02-20"
+        const dateTo = "2024-02-28"
+
+        const fetchTemps = async () => {
             const fetchedTemps2 = await GetTempsByDate(dateFrom, dateTo);
             console.log(fetchedTemps2)
             setTemps2(fetchedTemps2);
         }
 
         fetchTemps();
-    }, [])
+    }, [dateFrom, dateTo])
 
-    const [value, setValue] = React.useState(dayjs('2022-04-17'));
+    console.log(temps)
+    console.log(temps2)
 
     return (
-
         <div>
             <h1>Latest Temperatures</h1>
-            {/*{temps}*/}
-            {/*    {temps.map((temp) => (*/}
-            {/*        // eslint-disable-next-line react/jsx-key*/}
-            {/*        <div>{temp.payload}</div>*/}
-            {/*        ))}*/}
 
-            {/*{testArr}*/}
-            {/*{console.log(testArr)}*/}
-            {/*{tempsArr}*/}
-            {/*{testArr}*/}
-            {/*<LineChart*/}
-            {/*    xAxis={[{ scaleType: 'point', data: Array.from(Array(testArr.length).keys())}]}*/}
-            {/*    // series={[{data}]}*/}
-            {/* series={[{data: testArr}]}*/}
-            {/*    height={400}*/}
-            {/*/>*/}
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker', 'DatePicker']}>
                     {/*<DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} />*/}
                     <DatePicker
-                        label="Controlled picker"
-                        value={dateTo}
-                        onChange={dateTo}
+                        label="Date From"
+                        value={dayjs(dateFrom)}
+                        onChange={handleDateFromChange}
+                    />
+                    <DatePicker
+                        label="Date To"
+                        value={dayjs(dateFrom)}
+                        onChange={handleDateFromChange}
                     />
                 </DemoContainer>
             </LocalizationProvider>
             <TempLineChart rawTemperatures={temps}/>
-
             
 
         </div>

@@ -10,7 +10,7 @@ const getIndex = (temperatures) => {
 const TempLineChart = ({
     rawTemperatures
 }) => {
-    const temperatures = rawTemperatures.map(i => i.payload);
+    const temperatures = rawTemperatures.map(i => i.payload.temp);
     const temperaturesIndex = getIndex(temperatures)
     return(
         <LineChart
