@@ -1,8 +1,7 @@
 import connectMongoDB from '../../lib/mongodb';
 import Temperature from '../../../models/temperature';
-import { NextRequest, NextResponse } from 'next/server';
-import { URL, URLSearchParams } from 'url';
-import { ContentPasteOffSharp } from '@mui/icons-material';
+import { NextResponse } from 'next/server';
+import { URL } from 'url';
 
 
 export async function GET(req){
@@ -30,9 +29,6 @@ export async function GET(req){
                 undefined 
             : 20
         ).lean()
-
-        console.log(temps)
-        //console.log("Temps:" + temps)
 
         return NextResponse.json({ temps })
 

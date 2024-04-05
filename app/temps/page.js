@@ -31,11 +31,11 @@ export default function TempsPage(){
         temps2Array = temps2.map(i => i.payload);
     }
 
-    function handleDateFromChange(event) {
-        setDateFrom(event.target.value)
+    function handleDateFromChange(value) {
+        setDateFrom(value)
     }
-    function handleDateToChange(event) {
-        setDateTo(event.target.value)
+    function handleDateToChange(value) {
+        setDateTo(value)
     }
 
     useEffect(() => {
@@ -48,20 +48,15 @@ export default function TempsPage(){
     }, [])
 
     useEffect(() => {
-        const dateFrom = "2024-02-20"
-        const dateTo = "2024-02-28"
-
         const fetchTemps = async () => {
-            const fetchedTemps2 = await GetTempsByDate(dateFrom, dateTo);
-            console.log(fetchedTemps2)
+            const formmatedDateFrom = dateFrom.format("YYYY-MM-DD")
+            const formattedDateTo = dateTo.format("YYYY-MM-DD")
+            const fetchedTemps2 = await GetTempsByDate(formmatedDateFrom, formattedDateTo);
             setTemps2(fetchedTemps2);
         }
 
         fetchTemps();
     }, [dateFrom, dateTo])
-
-    console.log(temps)
-    console.log(temps2)
 
     return (
         <div>
@@ -73,19 +68,25 @@ export default function TempsPage(){
                     {/*<DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} />*/}
                     <DatePicker
                         label="Date From"
-                        value={dayjs(dateFrom)}
+                        value={dateFrom}
                         onChange={handleDateFromChange}
                     />
                     <DatePicker
                         label="Date To"
-                        value={dayjs(dateFrom)}
-                        onChange={handleDateFromChange}
+                        value={dateTo}
+                        onChange={handleDateToChange}
                     />
                 </DemoContainer>
             </LocalizationProvider>
-            <TempLineChart rawTemperatures={temps}/>
-            
 
+            {(temps2.length > 0)?
+            <TempLineChart rawTemperatures={temps2}/>            
+            : null}
+
+            {temps.length > 0? 
+            <TempLineChart rawTemperatures={temps}/>
+            :null}
+            
         </div>
 
     );
