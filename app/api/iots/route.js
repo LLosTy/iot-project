@@ -1,21 +1,16 @@
 import connectMongoDB from '../../lib/mongodb';
 import Iot from '../../../models/iot';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { URL } from 'url';
 
 
   export async function GET(req){
     await connectMongoDB();
     try {
-        console.log(req.qu)
-        console.log(req.body)
-        const myUrl = new URL(req.url)
-        console.log(myUrl)
-        const iotId = myUrl.searchParams.get("iot")
-        
+        const iotId = req.nextUrl.searchParams.get("iot")
         let query = {}
         
-        if (myUrl.searchParams.has("iot")) {
+        if (req.nextUrl.searchParams.has("iot")) {
             query.hardwareId = iotId
         }
         const iots = await Iot.find(query)
@@ -34,12 +29,13 @@ import { URL } from 'url';
   }
 
 
-  export async function POST(req, res) {
+  export async function POST(req) {
     await connectMongoDB();
     try {
-        const myUrl = new URL(req.url)
+        const data = await req.json()
 
-        const iots = await Iot.insertMany
+
+        const iots ={}
 
         return NextResponse.json({ iots })
 
@@ -52,12 +48,11 @@ import { URL } from 'url';
   export async function PUT(req) {
     await connectMongoDB();
     try {
-        const myUrl = new URL(req.url)
-        const iotId = myUrl.searchParams.get("iot")
+        const data = await req.json()
         
         let query = {}
         
-        if (myUrl.searchParams.has("iot")) {
+        if (req.nextUrl.searchParams.has("iot")) {
             query.hardwareId = iotId
         }
         const iots = await Iot.find(query)
