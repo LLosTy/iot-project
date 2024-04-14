@@ -5,7 +5,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 // import { LineChart } from '@mui/x-charts/LineChart';
-import { GetTemps, GetTempsByDate } from '../lib/actions'
+import { GetTemps, GetTempsByDate, GetIots } from '../lib/actions'
 import TempLineChart from '../../components/TempLineChart'
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -17,6 +17,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 export default function TempsPage(){
     const [temps, setTemps] = useState([])
     const [temps2, setTemps2] = useState([])
+    const [iots, setIots] = useState([])
     const [dateFrom, setDateFrom] = useState(dayjs())
     const [dateTo, setDateTo] = useState(dayjs())
     let testArr = []
@@ -42,6 +43,8 @@ export default function TempsPage(){
         const fetchTemps = async () => {
             const fetchedTemps = await GetTemps();
             setTemps(fetchedTemps);
+            const fecthedIots = await GetIots();
+            setIots(fecthedIots)
         }
 
         fetchTemps();
