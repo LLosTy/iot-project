@@ -7,20 +7,19 @@ import { URL } from 'url';
 export async function GET(req){
     await connectMongoDB();
     try {
-        const myUrl = new URL(req.url)
-        const dateFrom = myUrl.searchParams.get("dateFrom")
-        const dateTo = myUrl.searchParams.get("dateTo")
-        const iotId = myUrl.searchParams.get("iot")
+        const dateFrom = req.nextUrl.searchParams.get("dateFrom")
+        const dateTo = req.nextUrl.searchParams.get("dateTo")
+        const iotId = req.nextUrl.searchParams.get("iot")
         
         let query = {}
         
-        if (myUrl.searchParams.has("dateFrom") && myUrl.searchParams.has("dateTo")) {  
+        if (req.nextUrl.searchParams.has("dateFrom") && req.nextUrl.searchParams.has("dateTo")) {  
             query.timestamp = {
                 $gte: new Date(dateFrom),
                 $lte: new Date(dateTo)
             }
         }
-        else if (myUrl.searchParams.has("iot")) {
+        else if (req.nextUrl.searchParams.has("iot")) {
             query.hardwareId = iotId
         }
         const temps = await Temperature.find(query)
