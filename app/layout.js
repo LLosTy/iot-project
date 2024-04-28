@@ -39,8 +39,13 @@ export default function RootLayout({ children }) {
               </Typography>
 
 
-            <Link href={'/temps'}>
+              <Link href={'/temps'}>
                   <Button variant="Outlined">Temps</Button>
+                  {/*Temps*/}
+              </Link>
+
+              <Link href={'/device'}>
+                  <Button variant="Outlined">Devices</Button>
                   {/*Temps*/}
               </Link>
 
