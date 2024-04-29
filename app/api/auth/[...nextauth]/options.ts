@@ -3,6 +3,7 @@ import GitHubProvider from 'next-auth/providers/github'
 import Google from "next-auth/providers/google"
 import CredentialsProvider from 'next-auth/providers/credentials'
 import Users from '../../../../models/users'
+import connectMongoDB from '../../../lib/mongodb';
 
 
 export const options: NextAuthOptions = {
@@ -34,7 +35,14 @@ export const options: NextAuthOptions = {
                 // to verify with credentials
                 // Docs: https://next-auth.js.org/configuration/providers/credentials
                 console.log(credentials)
-                const user = { id: "42", name: "Dave", password: "nextauth" }
+                await connectMongoDB();
+                
+                if (credentials) {
+                    const db_user = await Users.findOne({
+                        username: credentials.username
+                    })
+                }
+                const user = { id: "42", email: "test@test-localStorage.com",  name: "Dave", password: "nextauth" }
 
                 if (credentials?.username === user.name && credentials?.password === user.password) {
                     return user
@@ -45,6 +53,69 @@ export const options: NextAuthOptions = {
         })
     ],
     callbacks: {
+        async signIn({ user, account, profile }) {
+            console.log(user)
+            console.log(profile)
+            console.log(account)
+
+            await connectMongoDB(); // Ensure database connection
+            const { id, email, name} = user;
+            let userData = {}
+
+            const dbUserData = await Users.findOne({email: email})
+            if (dbUserData){
+                const { githubId, googleId, username, password, displayName } = dbUserData
+
+                if (account?.provider === 'github'){
+                    userData = {
+                        githubId: githubId !== id ? id : githubId,
+                        googleId: googleId,
+                        username: username ? username : name,
+                        password: password,
+                        displayName: displayName ? displayName : name,
+                        email: email,
+                    }
+                }
+                else if (account?.provider === 'google') {
+                    userData = {
+                        githubId: githubId,
+                        googleId: googleId !== id ? id : googleId,
+                        username: username ? username : name,
+                        password: password,
+                        displayName: displayName ? displayName : name,
+                        email: email,
+                    }
+                }
+
+                await Users.findOneAndUpdate({ email }, userData, { upsert: true, new: true });
+            }
+            else {
+                if (account?.provider === 'github'){
+                    userData = {
+                        githubId: id,
+                        googleId: "",
+                        username: name,
+                        password: "",
+                        displayName: name,
+                        email: email,
+                    }
+                }
+                else if (account?.provider === 'google') {
+                    userData = {
+                        githubId: "",
+                        googleId: id,
+                        username: name,
+                        password: "",
+                        displayName: name,
+                        email: email,
+                    }
+                }
+
+                await Users.insertMany(userData)
+            }
+            
+            return true; // True continues the sign-in process
+        },
         jwt({ token, user }) {
           if (user) { // User is available during sign-in
             token.id = user.id
