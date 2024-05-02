@@ -5,8 +5,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 // import { LineChart } from '@mui/x-charts/LineChart';
-import { GetTemps, GetTempsByDate, GetIots } from '../lib/actions'
-import TempLineChart from '../../components/TempLineChart'
+import { GetTemps, GetTempsByDate, GetIots } from '/_lib/actions/temps'
+import TempLineChart from '/_components/TempLineChart'
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
