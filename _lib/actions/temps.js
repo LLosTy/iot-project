@@ -45,18 +45,3 @@ export const GetTempsByIotId = async (iotId) => {
         throw new Error("Error fetching Temps from Database! \n" + err.message)
     }
 }
-
-export const GetIots = async () => {
-    try{
-        const res = await fetch("http://localhost:3000/api/iots", {
-            cache: "no-store",
-        })
-        const data = await res.json()
-        
-        return data.temps;
-
-    } catch (err){
-        console.log(err)
-        throw new Error("Error fetching Iots from Database! \n" + err.message)
-    }
-}
