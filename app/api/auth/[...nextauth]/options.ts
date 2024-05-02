@@ -2,8 +2,9 @@ import type { NextAuthOptions } from 'next-auth'
 import GitHubProvider from 'next-auth/providers/github'
 import Google from "next-auth/providers/google"
 import CredentialsProvider from 'next-auth/providers/credentials'
-import Users from '../../../../models/users'
-import connectMongoDB from '../../../lib/mongodb';
+import Users from '../../../../_models/users'
+import connectMongoDB from '../../../../_lib/mongodb';
+import bcrypt from 'bcryptjs';
 
 
 export const options: NextAuthOptions = {
@@ -41,9 +42,14 @@ export const options: NextAuthOptions = {
                     const db_user = await Users.findOne({
                         username: credentials.username
                     })
+
+                    if (db_user && bcrypt.compareSync(credentials.password, db_user.password)) {
+                        return db_user
+                    }
                 }
                 const user = { id: "42", email: "test@test-localStorage.com",  name: "Dave", password: "nextauth" }
 
+                
                 if (credentials?.username === user.name && credentials?.password === user.password) {
                     return user
                 } else {
@@ -54,77 +60,45 @@ export const options: NextAuthOptions = {
     ],
     callbacks: {
         async signIn({ user, account, profile }) {
-            console.log(user)
-            console.log(profile)
-            console.log(account)
-
             await connectMongoDB(); // Ensure database connection
             const { id, email, name} = user;
-            let userData = {}
-
-            const dbUserData = await Users.findOne({email: email})
-            if (dbUserData){
-                const { githubId, googleId, username, password, displayName } = dbUserData
-
-                if (account?.provider === 'github'){
-                    userData = {
-                        githubId: githubId !== id ? id : githubId,
-                        googleId: googleId,
-                        username: username ? username : name,
-                        password: password,
-                        displayName: displayName ? displayName : name,
-                        email: email,
-                    }
-                }
-                else if (account?.provider === 'google') {
-                    userData = {
-                        githubId: githubId,
-                        googleId: googleId !== id ? id : googleId,
-                        username: username ? username : name,
-                        password: password,
-                        displayName: displayName ? displayName : name,
-                        email: email,
-                    }
-                }
-
-                await Users.findOneAndUpdate({ email }, userData, { upsert: true, new: true });
+            let userData = {
+                email,
+                username: name,
+                displayName: name,
             }
-            else {
-                if (account?.provider === 'github'){
-                    userData = {
-                        githubId: id,
-                        googleId: "",
-                        username: name,
-                        password: "",
-                        displayName: name,
-                        email: email,
-                    }
-                }
-                else if (account?.provider === 'google') {
-                    userData = {
-                        githubId: "",
-                        googleId: id,
-                        username: name,
-                        password: "",
-                        displayName: name,
-                        email: email,
-                    }
-                }
 
-                await Users.insertMany(userData)
+            // Determine fields to update based on provider
+            if (account.provider === 'github') {
+                userData.githubId = account.id;
+            } else if (account.provider === 'google') {
+                userData.googleId = account.id;
             }
-            
-            return true; // True continues the sign-in process
+
+            // Update or insert user data
+            const updatedUser = await Users.findOneAndUpdate(
+                { email },
+                userData,
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
+            // Ensure the user ID is properly set
+            user.id = updatedUser._id.toString();
+            return true;
         },
         jwt({ token, user }) {
-          if (user) { // User is available during sign-in
-            token.id = user.id
-          }
-          return token
+            if (user) { // User is available during sign-in
+                token.id = user.id
+            }
+            return token
         },
         session({ session, token }) {
-          session.user.id = token.id
-          return session
+            console.log(session)
+            console.log(token)
+            if (token.id) {
+                session.user.id = token.id
+            }
+            return session
         },
       },
 }
