@@ -69,11 +69,14 @@ export const options: NextAuthOptions = {
             }
 
             // Determine fields to update based on provider
-            if (account.provider === 'github') {
-                userData.githubId = account.id;
-            } else if (account.provider === 'google') {
-                userData.googleId = account.id;
+            if (account?.provider !== undefined){
+                if (account.provider === 'github') {
+                    userData.githubId = account.id;
+                } else if (account.provider === 'google') {
+                    userData.googleId = account.id;
+                }
             }
+
 
             // Update or insert user data
             const updatedUser = await Users.findOneAndUpdate(
