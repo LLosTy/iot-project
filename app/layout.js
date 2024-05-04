@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import Link from "next/link";
 import MemoryIcon from '@mui/icons-material/Memory';
-import AuthContext from './authContext'
+import AuthContext from './_auth'
 
 const inter = Inter({ subsets: ["latin"] });
 import '../styles/globals.css';
