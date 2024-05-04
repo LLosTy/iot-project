@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import Users from '../../../../_models/users'
 import connectMongoDB from '../../../../_lib/mongodb';
 import bcrypt from 'bcryptjs';
+import {string} from "prop-types";
 
 
 export const options: NextAuthOptions = {
@@ -66,14 +67,16 @@ export const options: NextAuthOptions = {
                 email,
                 username: name,
                 displayName: name,
+                githubId: "",
+                googleId: "",
             }
 
             // Determine fields to update based on provider
             if (account?.provider !== undefined){
                 if (account.provider === 'github') {
-                    userData.githubId = account.id;
+                    userData.githubId = String(account.id);
                 } else if (account.provider === 'google') {
-                    userData.googleId = account.id;
+                    userData.googleId = String(account.id);
                 }
             }
 
@@ -96,10 +99,12 @@ export const options: NextAuthOptions = {
             return token
         },
         session({ session, token }) {
-            console.log(session)
-            console.log(token)
-            if (token.id) {
-                session.user.id = token.id
+            if(session?.user !== undefined){
+                console.log(session)
+                console.log(token)
+                if (token.id) {
+                    session.user.id = token.id
+                }
             }
             return session
         },
