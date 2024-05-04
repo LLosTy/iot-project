@@ -36,7 +36,6 @@ export const options: NextAuthOptions = {
                 // This is where you need to retrieve user data
                 // to verify with credentials
                 // Docs: https://next-auth.js.org/configuration/providers/credentials
-                console.log(credentials)
                 await connectMongoDB();
                 
                 if (credentials) {
@@ -100,8 +99,6 @@ export const options: NextAuthOptions = {
         },
         session({ session, token }) {
             if(session?.user !== undefined){
-                console.log(session)
-                console.log(token)
                 if (token.id) {
                     session.user.id = token.id
                 }

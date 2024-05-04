@@ -1,28 +1,14 @@
 'use server'
 
-export const GetTempsByDevice = async (deviceId) => {
+export const GetUserDevices = async (userId) => {
     try{
-        const res = await fetch(`http://localhost:3000/api/temps?device=${deviceId}`, {
-            cache: "no-store",
-        });
-
-        const data = await res.json()
-        return data.temps;
-
-    } catch (err){
-        console.log(err)
-        throw new Error("Error fetching Temps of the Device from Database! \n" + err.message)
-    }
-}
-
-export const GetDevices = async () => {
-    try{
-        const res = await fetch("http://localhost:3000/api/devices", {
+        console.log(userId)
+        const res = await fetch(`http://localhost:3000/api/devices?user=${userId}`, {
             cache: "no-store",
         })
         const data = await res.json()
         
-        return data.temps;
+        //return data.devices;
 
     } catch (err){
         console.log(err)
@@ -30,15 +16,21 @@ export const GetDevices = async () => {
     }
 }
 
-export const CreateDevice = async() => {
+export const CreateDevice = async(deviceData) => {
     try{
+        console.log("Fetch device data:", deviceData)
+        console.log("JSON stringiied:", JSON.stringify(deviceData))
         const res = await fetch("http://localhost:3000/api/devices", {
-            cache: "no-store",
+            method: "POST", // Changed method to POST
+            headers: {
+                "Content-Type": "application/json" // Added content type header
+            },
+            body: JSON.stringify(deviceData) // Sending an empty object for creating a new device
         });
         const data = await res.json();
-
-        return data.temps;
-
+        console.log(data.devices)
+        
+        
     } catch (err){
         console.log(err)
         throw new Error("Error Creating Device in Database! \n" + err.message)
@@ -48,12 +40,16 @@ export const CreateDevice = async() => {
 
 export const UpdateDevice = async() => {
     try{
-        const res = await fetch("http://localhost:3000/api/devices", {
-            cache: "no-store",
+        const res = await fetch("http://localhost:3000/api/devices",  {
+            method: "PUT", // Changed method to POST
+            headers: {
+                "Content-Type": "application/json" // Added content type header
+            },
+            body: JSON.stringify(deviceData) // Sending an empty object for creating a new device
         });
         const data = await res.json();
 
-        return data.temps;
+        //return data.devices;
 
     } catch (err){
         console.log(err)
@@ -61,14 +57,14 @@ export const UpdateDevice = async() => {
     }
 }
 
-export const DeleteDevice = async() => {
+export const DeleteDevice = async(deviceId) => {
     try{
-        const res = await fetch("http://localhost:3000/api/devices", {
-            cache: "no-store",
-        });
+        const res = await fetch(`http://localhost:3000/api/devices?device=${deviceId}`,  {
+            method: "DELETE", // Changed method to POST
+         });
         const data = await res.json();
 
-        return data.temps;
+        //return data.devices;
         
     } catch (err){
         console.log(err)

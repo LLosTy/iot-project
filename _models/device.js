@@ -1,6 +1,6 @@
-import mongoose, {Schema, mongo} from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
-const iotSchema = new Schema({
+const deviceSchema = new Schema({
     hardwareId: {
         type: Number,
         required: true
@@ -18,6 +18,6 @@ const iotSchema = new Schema({
         required: true
     }
 })
-const Device = mongoose.models.Device || mongoose.model("Device", iotSchema, 'iots')
+const Device = mongoose.models.Device || mongoose.model("Device", deviceSchema, 'devices')
 
 export default Device;

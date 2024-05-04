@@ -9,7 +9,7 @@ export async function GET(req){
     try {
         const dateFrom = req.nextUrl.searchParams.get("dateFrom")
         const dateTo = req.nextUrl.searchParams.get("dateTo")
-        const iotId = req.nextUrl.searchParams.get("iot")
+        const deviceId = req.nextUrl.searchParams.get("device")
         
         let query = {}
         
@@ -19,12 +19,12 @@ export async function GET(req){
                 $lte: new Date(dateTo)
             }
         }
-        else if (req.nextUrl.searchParams.has("iot")) {
-            query.hardwareId = iotId
+        else if (req.nextUrl.searchParams.has("device")) {
+            query.hardwareId = deviceId
         }
         const temps = await Temperature.find(query)
             .limit( 
-            (dateFrom && dateTo) || iotId ? 
+            (dateFrom && dateTo) || deviceId ? 
                 undefined 
             : 20
         ).lean()

@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import AddIcon from "@mui/icons-material/Add";
 import {Card, Grid} from "@mui/material";
+import { CreateDevice } from '../_lib/actions/devices'
+import { useSession } from 'next-auth/react';
 
 const style = {
     position: 'absolute',
@@ -19,9 +21,18 @@ const style = {
 };
 
 export default function BasicModal() {
+    const {data: session} = useSession();
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const handleSubmit = () => {
+        const device = {
+            hardwareId: 1,
+            alias: "Test room",
+            userId: session.user.id
+        }
+        CreateDevice(device)
+    }
 
     return (
         <div>
@@ -43,6 +54,8 @@ export default function BasicModal() {
                         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                             Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
                         </Typography>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleSubmit}>Submit</Button>
                     </Box>
                 </Modal>
         </div>
