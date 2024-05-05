@@ -1,7 +1,6 @@
-import connectMongoDB from '../../lib/mongodb';
-import Temperature from '../../../models/temperature';
+import connectMongoDB from '../../../_lib/mongodb';
+import Temperature from '../../../_models/temperature';
 import { NextResponse } from 'next/server';
-import { URL } from 'url';
 
 
 export async function GET(req){
@@ -22,12 +21,15 @@ export async function GET(req){
         else if (req.nextUrl.searchParams.has("device")) {
             query.hardwareId = deviceId
         }
+
+        console.log(query)
         const temps = await Temperature.find(query)
             .limit( 
             (dateFrom && dateTo) || deviceId ? 
                 undefined 
             : 20
         ).lean()
+        console.log(temps)
 
         return NextResponse.json({ temps })
 

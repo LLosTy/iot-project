@@ -5,7 +5,6 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import Users from '../../../../_models/users'
 import connectMongoDB from '../../../../_lib/mongodb';
 import bcrypt from 'bcryptjs';
-import {string} from "prop-types";
 
 
 export const options: NextAuthOptions = {
@@ -92,12 +91,15 @@ export const options: NextAuthOptions = {
             return true;
         },
         jwt({ token, user }) {
+            console.log(token)
+            console.log(user)
             if (user) { // User is available during sign-in
                 token.id = user.id
             }
             return token
         },
         session({ session, token }) {
+            console.log(token)
             if(session?.user !== undefined){
                 if (token.id) {
                     session.user.id = token.id

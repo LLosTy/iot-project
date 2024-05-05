@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import Users from "./users";
 
 const deviceSchema = new Schema({
     hardwareId: {
@@ -10,12 +11,12 @@ const deviceSchema = new Schema({
         required: true
     },
     userId: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     timeestamp: {
         type: Date,
-        required: true
+        default: new Date()
     }
 })
 const Device = mongoose.models.Device || mongoose.model("Device", deviceSchema, 'devices')

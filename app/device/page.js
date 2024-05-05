@@ -12,10 +12,6 @@ import { GetUserDevices } from '../../_lib/actions/devices'
 export default function DevicePage(){
     const {data: session} = useSession();
     const [devices, setDevices] = useState([]);
-    
-    if (session){
-        console.log("Session info:", session)
-    }
 
     useEffect(() => {
         const fetchDevices = async () => {
@@ -31,7 +27,9 @@ export default function DevicePage(){
         };
 
         fetchDevices();
-    }, [])
+    }, [session])
+
+    console.log(devices)
 
     return(
         <div>
@@ -42,13 +40,15 @@ export default function DevicePage(){
                                     Room={"Master Bedroom"}
                                     LatestTemp={25}
                         />
-                        {devices? (
+                        {(devices.length > 0) ? (
+                            console.log(devices),
                             devices.map((device) => {
                                 <DeviceCard
                                     key={device._id}
                                     DeviceId={device.hardwareId}
                                     Owner={session.user.name}
                                     Room={device.alias}
+                                    LatestTemp={25}
                                 />
                             })
                         )
