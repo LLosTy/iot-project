@@ -31,9 +31,9 @@ export const GetTempsByDate = async (dateFrom, dateTo) => {
     }
 }
 
-export const GetTempsByIotId = async (iotId) => {
+export const GetTempsByDevice = async (deviceId) => {
     try{
-        const res = await fetch(`http://localhost:3000/api/temps?iot=${iotId}`, {
+        const res = await fetch(`http://localhost:3000/api/temps?device=${deviceId}`, {
             cache: "no-store",
         });
 
@@ -42,6 +42,6 @@ export const GetTempsByIotId = async (iotId) => {
 
     } catch (err){
         console.log(err)
-        throw new Error("Error fetching Temps from Database! \n" + err.message)
+        throw new Error("Error fetching Temps of the Device from Database! \n" + err.message)
     }
 }

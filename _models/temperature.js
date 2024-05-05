@@ -3,25 +3,21 @@ import mongoose, {Schema} from "mongoose";
 const temperatureSchema = new Schema({
     topic: String,
     payload: {
-        type: Number,
-        require: true
+        type: Object,
+        required: true
     },
     qos: Number,
     retain: Boolean,
     _msgid: String,
     timestamp: {
         type: Date,
-        require: true
+        required: true
     },
     hardwareId: {
         type: Number,
-        require: true
+        required: true
     }
 })
 const Temperature = mongoose.models.Temperature || mongoose.model("Temperature", temperatureSchema, 'temperatures')
-// const Temperature = mongoose.model('Temperature', temperatureSchema, 'temperatures');
 
-// temperatureSchema = mongoose.model('Temperature', temperatureSchema);
-// module.exports = mongoose.model('Temperature',temperatureSchema)
-// module.exports = temperatureSchema;
 export default Temperature;

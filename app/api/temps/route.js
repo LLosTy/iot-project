@@ -1,36 +1,35 @@
-import connectMongoDB from '../../lib/mongodb';
-import Temperature from '../../../models/temperature';
-import { NextRequest, NextResponse } from 'next/server';
-import { URL, URLSearchParams } from 'url';
+import connectMongoDB from '../../../_lib/mongodb';
+import Temperature from '../../../_models/temperature';
+import { NextResponse } from 'next/server';
 
 
 export async function GET(req){
     await connectMongoDB();
     try {
-        const myUrl = new URL(req.url)
-        const dateFrom = myUrl.searchParams.get("dateFrom")
-        const dateTo = myUrl.searchParams.get("dateTo")
-        const iotId = myUrl.searchParams.get("iot")
+        const dateFrom = req.nextUrl.searchParams.get("dateFrom")
+        const dateTo = req.nextUrl.searchParams.get("dateTo")
+        const deviceId = req.nextUrl.searchParams.get("device")
         
         let query = {}
         
-        if (myUrl.searchParams.has("dateFrom") && myUrl.searchParams.has("dateTo")) {  
+        if (req.nextUrl.searchParams.has("dateFrom") && req.nextUrl.searchParams.has("dateTo")) {  
             query.timestamp = {
                 $gte: new Date(dateFrom),
                 $lte: new Date(dateTo)
             }
         }
-        else if (myUrl.searchParams.has("iot")) {
-            query.hardwareId = iotId
+        else if (req.nextUrl.searchParams.has("device")) {
+            query.hardwareId = deviceId
         }
 
+        console.log(query)
         const temps = await Temperature.find(query)
             .limit( 
-            (dateFrom && dateTo) || iotId ? 
+            (dateFrom && dateTo) || deviceId ? 
                 undefined 
             : 20
-        )
-        //console.log("Temps:" + temps)
+        ).lean()
+        console.log(temps)
 
         return NextResponse.json({ temps })
 
