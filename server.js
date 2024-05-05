@@ -1,13 +1,14 @@
-const express = require('express')
+// const express = require('express')
+const express = require("express");
 const app = express()
 require('dotenv').config({path:'.env.local'})
 //TODO specify the port number inside .env.local
 const port = process.env.SERVER_PORT
 app.use(express.json())
 
-// const deviceRouter = require('./routes/devices')
+const deviceRouter = require('./routes/devices')
 
-// app.use('/devices', deviceRouter)
+app.use('/devices', deviceRouter)
 
 
 const mongoose = require('mongoose')
