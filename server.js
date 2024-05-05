@@ -3,6 +3,17 @@ const app = express()
 require('dotenv').config({path:'.env.local'})
 //TODO specify the port number inside .env.local
 const port = process.env.SERVER_PORT
+app.use(express.json())
+
+// const deviceRouter = require('./routes/devices')
+
+// app.use('/devices', deviceRouter)
+
+
+const mongoose = require('mongoose')
+
+mongoose.connect(process.env.DATABASE_URL).then(r => console.log('Connected to Database'))
+mongoose.connection.on('error',(error) => console.error(error))
 
 
 app.get('/', (req, res) => {
