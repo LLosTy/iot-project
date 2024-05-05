@@ -17,7 +17,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 export default function TempsPage(){
     const [temps, setTemps] = useState([])
     const [temps2, setTemps2] = useState([])
-    const [iots, setIots] = useState([])
     const [dateFrom, setDateFrom] = useState(dayjs())
     const [dateTo, setDateTo] = useState(dayjs())
     let testArr = []
@@ -43,8 +42,6 @@ export default function TempsPage(){
         const fetchTemps = async () => {
             const fetchedTemps = await GetTemps();
             setTemps(fetchedTemps);
-            const fecthedIots = await GetIots();
-            setIots(fecthedIots)
         }
 
         fetchTemps();
