@@ -1,6 +1,6 @@
-import mongoose, {Schema} from "mongoose";
+const mongoose = require("mongoose");
 
-const temperatureSchema = new Schema({
+const temperatureSchema = new mongoose.Schema({
     topic: String,
     payload: {
         type: Object,
@@ -20,4 +20,4 @@ const temperatureSchema = new Schema({
 })
 const Temperature = mongoose.models.Temperature || mongoose.model("Temperature", temperatureSchema, 'temperatures')
 
-export default Temperature;
+module.exports = Temperature;

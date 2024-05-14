@@ -1,7 +1,6 @@
-import mongoose, {Schema} from "mongoose";
-import Users from "./users";
+const mongoose = require("mongoose");
 
-const deviceSchema = new Schema({
+const deviceSchema = new mongoose.Schema({
     hardwareId: {
         type: Number,
         required: true
@@ -14,11 +13,11 @@ const deviceSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    timeestamp: {
+    timestamp: {
         type: Date,
         default: new Date()
     }
 })
 const Device = mongoose.models.Device || mongoose.model("Device", deviceSchema, 'devices')
 
-export default Device;
+module.exports = Device;

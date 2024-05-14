@@ -1,7 +1,6 @@
-import mongoose, {Schema, mongo} from "mongoose";
-import { type } from "os";
+const mongoose = require("mongoose");
 
-const usersSchema = new Schema({
+const usersSchema = new mongoose.Schema({
     githubId: {
         type: String,
     },
@@ -31,4 +30,4 @@ const usersSchema = new Schema({
 })
 const Users = mongoose.models.Users || mongoose.model("Users", usersSchema, 'users')
 
-export default Users;
+module.exports = Users;

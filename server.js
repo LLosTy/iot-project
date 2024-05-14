@@ -7,8 +7,10 @@ const port = process.env.SERVER_PORT
 app.use(express.json())
 
 const deviceRouter = require('./routes/devices')
+const tempsRouter = require('./routes/temperatures')
 
 app.use('/devices', deviceRouter)
+app.use('/temps', tempsRouter)
 
 
 const mongoose = require('mongoose')
