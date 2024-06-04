@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-//TODO check if userId exists and is valid
+//TODO check if user on userId exists and is valid
 router.put('/create', async (req, res) => {
     const { hardwareId, userId } = req.body;
     if(hardwareId && userId){
