@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 
 //TODO check if userId exists and is valid
 //Create new device
-router.post('/', async (req, res) => {
+router.put('/', async (req, res) => {
     const { hardwareId, userId } = req.body;
     if(hardwareId && userId){
         try{
