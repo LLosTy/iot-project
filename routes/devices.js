@@ -4,8 +4,7 @@ const Device = require("../_models/device.js")
 const router = express.Router()
 
 
-// GET request handler for device ID
-//TODO change DeviceId to search for HardwareId, write the endpoint without needing "query" variable
+//Get Devices under a UserId
 router.get('/', async (req, res) => {
     if(req.query.userId){
         try {
@@ -20,32 +19,30 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST request handler
+//TODO check if userId exists and is valid
+//Create new device
 router.post('/', async (req, res) => {
-    try {
-        const data = req.body;
-        console.log("Device data:", data);
-        const temp_data = Array(data)
-        console.log("Device length: ", temp_data.length)
+    const { hardwareId, userId } = req.body;
+    if(hardwareId && userId){
+        try{
+            const exists = await Device.find({
+                hardwareId: req.body.hardwareId
+            }).lean()
+            if(Object.keys(exists).length !== 0){
+                res.status(409).json({message: 'Device with this ID already exists'})
+            }else{
+                const result = await new Device({ hardwareId, userId }).save();
+                res.json({message: result})
+            }
 
-
-        if (!Array.isArray(data) && temp_data.length > 1) {
-            return res.status(400).json({ error: "Data format is invalid, please provide JSON Array data for two or more devices!" });
-        } else if (temp_data.length === 0) {
-            return res.status(400).json({ error: "No devices data provided!" });
+        }catch (error){
+            console.error('Error while creating device:',error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
-
-        const devices = await Device.insertMany(data);
-
-        if (!devices || devices.length === 0) {
-            return res.status(500).json({ error: "Failed to create devices!" });
-        }
-
-        res.json({ message: "Successfully created devices", devices });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    }else{
+        return res.status(400).json({ error: "Please specify user ID  and hardware ID!" });
     }
+
 });
 
 // PUT request handler
@@ -96,7 +93,6 @@ router.delete('/', async (req, res) => {
     }else{
         return res.status(400).json({ error: "Please specify hardware ID in query params!" });
     }
-
 });
 
 module.exports = router

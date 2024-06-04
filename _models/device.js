@@ -7,7 +7,7 @@ const deviceSchema = new mongoose.Schema({
     },
     alias: {
         type: String,
-        required: true
+        required: false
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
