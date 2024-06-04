@@ -81,29 +81,22 @@ router.put('/', async (req, res) => {
 
 // DELETE request handler
 router.delete('/', async (req, res) => {
-    try {
-        const deviceId = req.query.device;
+    if(req.query.hardwareId){
+        try{
+            const result = await Device.deleteOne({"hardwareId":req.query.hardwareId})
+            if(result.deletedCount === 0){
+                return res.status(404).json({message: 'Device not found'});
+            }
+            res.json({message:'Deleted device with hardwareId: ' + req.query.hardwareId})
 
-        if (!deviceId) {
-            return res.status(400).json({ message: "Device ID wasn't specified!" });
+        }catch(error){
+            console.error('Error while deleting device:',error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
-
-        const isValidObjectId = mongoose.isValidObjectId(deviceId);
-        if (!isValidObjectId) {
-            return res.status(400).json({ message: "Invalid Device ID format!" });
-        }
-
-        const deletedDevice = await Device.findByIdAndDelete(deviceId);
-
-        if (!deletedDevice) {
-            return res.status(404).json({ message: "Device not found!" });
-        }
-
-        res.status(200).json({ message: "Successfully deleted IoT Device" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    }else{
+        return res.status(400).json({ error: "Please specify hardware ID in query params!" });
     }
+
 });
 
 module.exports = router
