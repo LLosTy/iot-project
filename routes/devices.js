@@ -1,123 +1,93 @@
 const express = require('express')
-const mongoose = require('mongoose');
 const Device = require("../_models/device.js")
 const router = express.Router()
 
 
-// GET request handler for device ID
+//Get Devices under a UserId
 router.get('/', async (req, res) => {
-    try {
-        const deviceId = req.query.device;
-        const userId = req.query.user;
-        let query = {};
-
-        if (!deviceId && !userId) {
-            return res.status(400).json({ error: "Please specify device ID or user ID!" });
+    if(req.query.userId){
+        try {
+            const devices = await Device.find({"userId": req.query.userId}).lean() // Retrieve all devices
+            res.json(devices) // Send devices as JSON response
+        } catch (error) {
+            console.error('Error retrieving devices:', error)
+            res.status(500).json({ message: 'Internal Server Error' })
         }
-
-        if (deviceId) {
-            query._id = deviceId;
-        }
-        if (userId) {
-            query.userId = userId;
-        }
-
-        const devices = await Device.find(query)
-            .limit(deviceId || userId ? undefined : 20)
-            .populate("userId")
-            .lean();
-
-        console.log("User Devices:", devices);
-        res.status(200).json({ devices });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    }else{
+        return res.status(400).json({ error: "Please specify user ID in query params!" });
     }
 });
 
-// POST request handler
-router.post('/', async (req, res) => {
-    try {
-        const data = req.body;
-        console.log("Device data:", data);
-        const temp_data = Array(data)
-        console.log("Device length: ", temp_data.length)
+//TODO check if user on userId exists and is valid
+router.put('/create', async (req, res) => {
+    const { hardwareId, userId } = req.body;
+    if(hardwareId && userId){
+        try{
+            const exists = await Device.find({
+                hardwareId: req.body.hardwareId
+            }).lean()
+            if(Object.keys(exists).length !== 0){
+                res.status(409).json({message: 'Device with this ID already exists'})
+            }else{
+                const result = await new Device({ hardwareId, userId }).save();
+                res.json({message: result})
+            }
 
-
-        if (!Array.isArray(data) && temp_data.length > 1) {
-            return res.status(400).json({ error: "Data format is invalid, please provide JSON Array data for two or more devices!" });
-        } else if (temp_data.length === 0) {
-            return res.status(400).json({ error: "No devices data provided!" });
+        }catch (error){
+            console.error('Error while creating device:',error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
+    }else{
+        return res.status(400).json({ error: "Please specify user ID  and hardware ID!" });
+    }
 
-        const devices = await Device.insertMany(data);
+});
 
-        if (!devices || devices.length === 0) {
-            return res.status(500).json({ error: "Failed to create devices!" });
+
+router.put('/update', async (req, res) => {
+    //Had to validate length here, otherwise it would throw a different error if i validated in mongoose
+    if (req.body.hardwareId.length === 16) {
+        try {
+            let device = await Device.findOne({
+                hardwareId: req.body.hardwareId
+            })
+
+            const fieldsToUpdate = ['userId', 'alias'];
+
+            fieldsToUpdate.forEach(field => {
+                if (req.body[field]) {
+                    device[field] = req.body[field];
+                }
+            });
+
+            await device.save()
+
+            res.json(device)
+
+        } catch (error) {
+            console.error('Error while updating device:', error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
-
-        res.json({ message: "Successfully created devices", devices });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    } else {
+        res.status(400).json({message: 'Please specify a valid hardwareId'})
     }
 });
 
-// PUT request handler
-router.put('/', async (req, res) => {
-    try {
-        const data = req.body;
-        const { _id, ...updateData } = data;
-
-        if (!_id) {
-            return res.status(400).json({ error: "Device ID wasn't specified!" });
-        }
-
-        const isValidObjectId = mongoose.isValidObjectId(_id);
-        if (!isValidObjectId) {
-            return res.status(400).json({ error: "Invalid Device ID format!" });
-        }
-
-        const updatedDevice = await Device.findByIdAndUpdate(_id, updateData, {
-            new: true,
-            runValidators: true,
-        }).populate("userId").lean();
-
-        if (!updatedDevice) {
-            return res.status(404).json({ error: "Device not found!" });
-        }
-
-        res.status(200).json({ message:`Successfully updated device`, updatedDevice });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// DELETE request handler
 router.delete('/', async (req, res) => {
-    try {
-        const deviceId = req.query.device;
+    if(req.query.hardwareId){
+        try{
+            const result = await Device.deleteOne({"hardwareId":req.query.hardwareId})
+            if(result.deletedCount === 0){
+                return res.status(404).json({message: 'Device not found'});
+            }
+            res.json({message:'Deleted device with hardwareId: ' + req.query.hardwareId})
 
-        if (!deviceId) {
-            return res.status(400).json({ message: "Device ID wasn't specified!" });
+        }catch(error){
+            console.error('Error while deleting device:',error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
-
-        const isValidObjectId = mongoose.isValidObjectId(deviceId);
-        if (!isValidObjectId) {
-            return res.status(400).json({ message: "Invalid Device ID format!" });
-        }
-
-        const deletedDevice = await Device.findByIdAndDelete(deviceId);
-
-        if (!deletedDevice) {
-            return res.status(404).json({ message: "Device not found!" });
-        }
-
-        res.status(200).json({ message: "Successfully deleted IoT Device" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    }else{
+        return res.status(400).json({ error: "Please specify hardware ID in query params!" });
     }
 });
 

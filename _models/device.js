@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const deviceSchema = new mongoose.Schema({
     hardwareId: {
-        type: Number,
-        required: true
+        type: String,
+        required: true,
     },
     alias: {
         type: String,
-        required: true
+        required: false
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
