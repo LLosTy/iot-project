@@ -5,33 +5,18 @@ const router = express.Router()
 
 
 // GET request handler for device ID
+//TODO change DeviceId to search for HardwareId, write the endpoint without needing "query" variable
 router.get('/', async (req, res) => {
-    try {
-        const deviceId = req.query.device;
-        const userId = req.query.user;
-        let query = {};
-
-        if (!deviceId && !userId) {
-            return res.status(400).json({ error: "Please specify device ID or user ID!" });
+    if(req.query.userId){
+        try {
+            const devices = await Device.find({"userId": req.query.userId}).lean() // Retrieve all devices
+            res.json(devices) // Send devices as JSON response
+        } catch (error) {
+            console.error('Error retrieving devices:', error)
+            res.status(500).json({ message: 'Internal Server Error' })
         }
-
-        if (deviceId) {
-            query._id = deviceId;
-        }
-        if (userId) {
-            query.userId = userId;
-        }
-
-        const devices = await Device.find(query)
-            .limit(deviceId || userId ? undefined : 20)
-            .populate("userId")
-            .lean();
-
-        console.log("User Devices:", devices);
-        res.status(200).json({ devices });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    }else{
+        return res.status(400).json({ error: "Please specify user ID in query params!" });
     }
 });
 

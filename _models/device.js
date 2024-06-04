@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const deviceSchema = new mongoose.Schema({
     hardwareId: {
-        type: Number,
+        type: String,
         required: true
     },
     alias: {
