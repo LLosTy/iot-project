@@ -1,5 +1,4 @@
 const express = require('express')
-const mongoose = require('mongoose');
 const Device = require("../_models/device.js")
 const router = express.Router()
 
@@ -74,7 +73,6 @@ router.put('/update', async (req, res) => {
     }
 });
 
-// DELETE request handler
 router.delete('/', async (req, res) => {
     if(req.query.hardwareId){
         try{
