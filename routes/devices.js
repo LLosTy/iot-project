@@ -20,8 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 //TODO check if userId exists and is valid
-//Create new device
-router.put('/', async (req, res) => {
+router.put('/create', async (req, res) => {
     const { hardwareId, userId } = req.body;
     if(hardwareId && userId){
         try{
@@ -45,34 +44,33 @@ router.put('/', async (req, res) => {
 
 });
 
-// PUT request handler
-router.put('/', async (req, res) => {
-    try {
-        const data = req.body;
-        const { _id, ...updateData } = data;
 
-        if (!_id) {
-            return res.status(400).json({ error: "Device ID wasn't specified!" });
+router.put('/update', async (req, res) => {
+    //Had to validate length here, otherwise it would throw a different error if i validated in mongoose
+    if (req.body.hardwareId.length === 16) {
+        try {
+            let device = await Device.findOne({
+                hardwareId: req.body.hardwareId
+            })
+
+            const fieldsToUpdate = ['userId', 'alias'];
+
+            fieldsToUpdate.forEach(field => {
+                if (req.body[field]) {
+                    device[field] = req.body[field];
+                }
+            });
+
+            await device.save()
+
+            res.json(device)
+
+        } catch (error) {
+            console.error('Error while updating device:', error);
+            res.status(500).json({message: 'Internal Server Error'})
         }
-
-        const isValidObjectId = mongoose.isValidObjectId(_id);
-        if (!isValidObjectId) {
-            return res.status(400).json({ error: "Invalid Device ID format!" });
-        }
-
-        const updatedDevice = await Device.findByIdAndUpdate(_id, updateData, {
-            new: true,
-            runValidators: true,
-        }).populate("userId").lean();
-
-        if (!updatedDevice) {
-            return res.status(404).json({ error: "Device not found!" });
-        }
-
-        res.status(200).json({ message:`Successfully updated device`, updatedDevice });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+    } else {
+        res.status(400).json({message: 'Please specify a valid hardwareId'})
     }
 });
 
