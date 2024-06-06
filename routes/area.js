@@ -27,6 +27,8 @@ router.put('/create',async(req,res) =>{
             console.error('Error while creating area:',error);
             res.status(500).json({message: 'Internal Server Error'})
         }
+    }else{
+        return res.status(400).json({ error: "Please specify areaName, hardwareId and ownerId" });
     }
 })
 //TODO Delete an Area route
