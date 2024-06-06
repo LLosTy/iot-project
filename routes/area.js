@@ -9,6 +9,8 @@ router.get('/hello',async (req,res) =>{
 })
 
 //TODO Create an Area route
+//TODO more error checking and optimization
+//TODO check if ownerID is real and also viewerID's
 router.put('/create',async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
