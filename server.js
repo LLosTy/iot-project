@@ -8,9 +8,11 @@ app.use(express.json())
 
 const deviceRouter = require('./routes/devices')
 const tempsRouter = require('./routes/temperatures')
+const areaRouter = require("./routes/area")
 
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
+app.use('/area',areaRouter)
 
 
 const mongoose = require('mongoose')
