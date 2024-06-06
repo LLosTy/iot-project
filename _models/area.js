@@ -27,15 +27,19 @@ const areaSchema = new mongoose.Schema({
             },
             value:{
                 type:Number,
-                required: true,
+                required: false,
             },
-            threshold:{
+            thresholdMin:{
                 type:Number,
-                required:true,
+                required:false,
+            },
+            thresholdMax:{
+                type:Number,
+                required:false,
             },
             acknowledged:{
                 type:Boolean,
-                required:true,
+                required:false,
                 default:false
             }
         }
