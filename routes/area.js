@@ -2,6 +2,7 @@
 const Area = require("../_models/area.js")
 const express = require("express");
 const router = express.Router()
+const Device = require("../_models/device")
 
 router.get('/hello',async (req,res) =>{
     res.json({message:"hello area"})
@@ -17,11 +18,21 @@ router.put('/create',async(req,res) =>{
                 hardwareId
             }).lean()
 
+            const hardwareExists = await Device.find({
+                hardwareId
+            }).lean
+
             if(Object.keys(exists).length !== 0){
-                res.status(409).json({message: 'Area with this ID already exists'})
+                res.status(409).json({message: 'Area with this hardware ID already exists'})
             }else{
-                const result = await new Area({areaName, hardwareId, ownerId, viewers, notifications}).save();
-                res.json({message: result})
+                try{
+                    if(Object.keys(hardwareExists()).length !== 0){
+                        const result = await new Area({areaName, hardwareId, ownerId, viewers, notifications}).save();
+                        res.json({message: result})
+                    }
+                }catch(error){
+                    res.status(409).json({message: 'This hardware ID does not exist'})
+                }
             }
         }catch(error){
             console.error('Error while creating area:',error);
