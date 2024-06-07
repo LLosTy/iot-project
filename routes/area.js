@@ -5,6 +5,8 @@ const router = express.Router()
 const Device = require("../_models/device")
 const User = require("../_models/users")
 
+//TODO maybe create a validation middleware for users, devices etc ..
+
 router.get('/hello',async (req,res) =>{
     res.json({message:"hello area"})
 })
@@ -52,18 +54,26 @@ router.put('/create',async(req,res) =>{
 })
 //TODO Delete an Area route
 
-//TODO Get an Area based on userID
+//TODO Get Areas based on userID
 
 router.get('/', async(req,res) => {
-    console.log(req.query.userId)
-    const areas = await Area.find({
-        $or: [
-            { ownerId: req.query.userId },
-            { viewers: { $elemMatch: { viewerId: req.query.userId } } }
-        ]
-    });
-
-    res.json({message: areas})
+    // console.log(req.query.userId)
+    try{
+        const userExists = await User.find({_id:req.query.userId})
+        if(Object.keys(userExists).length === 0){
+            res.status(409).json({message: 'This user ID does not exist'})
+        }else{
+            const areas = await Area.find({
+                $or: [
+                    { ownerId: req.query.userId },
+                    { viewers: { $elemMatch: { viewerId: req.query.userId } } }
+                ]
+            });
+            res.json({message: areas})
+        }
+    }catch(error){
+        res.status(500).json({message: 'Internal Server Error'})
+    }
 
 })
 
