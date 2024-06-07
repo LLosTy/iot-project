@@ -3,6 +3,7 @@ const Area = require("../_models/area.js")
 const express = require("express");
 const router = express.Router()
 const Device = require("../_models/device")
+const User = require("../_models/users")
 
 router.get('/hello',async (req,res) =>{
     res.json({message:"hello area"})
@@ -16,22 +17,29 @@ router.put('/create',async(req,res) =>{
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
     if(areaName && hardwareId && ownerId){
         try{
-
-            const [exists, hardwareExists] = await Promise.all([
+            //TODO lookup ownerId and iterate through viewers and also ownerId != viewerId
+            const [areaExists, hardwareExists, userExists] = await Promise.all([
                 Area.find({ hardwareId }).lean(),
-                Device.find({ hardwareId }).lean()
+                Device.find({ hardwareId }).lean(),
+                User.find({_id:ownerId}).lean()
             ]);
 
-            if(Object.keys(exists).length !== 0){
+            if(Object.keys(areaExists).length !== 0){
                 res.status(409).json({message: 'Area with this hardware ID already exists'})
-            }else{
-                try{
-                    if(Object.keys(hardwareExists()).length !== 0){
-                        const result = await new Area({areaName, hardwareId, ownerId, viewers, notifications}).save();
-                        res.json({message: result})
-                    }
-                }catch(error){
-                    res.status(409).json({message: 'This hardware ID does not exist'})
+            }
+
+            if(Object.keys(hardwareExists).length === 0){
+                res.status(409).json({message: 'This hardware ID does not exist'})
+            }
+
+            if(Object.keys(userExists).length === 0){
+                res.status(409).json({message: 'This user ID does not exist'})
+            }
+
+            else{
+                if(Object.keys(hardwareExists).length !== 0){
+                    const result = await new Area({areaName, hardwareId, ownerId, viewers, notifications}).save();
+                    res.json({message: result})
                 }
             }
         }catch(error){
