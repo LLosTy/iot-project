@@ -54,6 +54,19 @@ router.put('/create',async(req,res) =>{
 
 //TODO Get an Area based on userID
 
+router.get('/', async(req,res) => {
+    console.log(req.query.userId)
+    const areas = await Area.find({
+        $or: [
+            { ownerId: req.query.userId },
+            { viewers: { $elemMatch: { viewerId: req.query.userId } } }
+        ]
+    });
+
+    res.json({message: areas})
+
+})
+
 //TODO Update an Area
 
 //TODO Add hardwareID to area route
