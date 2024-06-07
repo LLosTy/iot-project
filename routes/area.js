@@ -16,13 +16,11 @@ router.put('/create',async(req,res) =>{
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
     if(areaName && hardwareId && ownerId){
         try{
-            const exists = await Area.find({
-                hardwareId
-            }).lean()
 
-            const hardwareExists = await Device.find({
-                hardwareId
-            }).lean
+            const [exists, hardwareExists] = await Promise.all([
+                Area.find({ hardwareId }).lean(),
+                Device.find({ hardwareId }).lean()
+            ]);
 
             if(Object.keys(exists).length !== 0){
                 res.status(409).json({message: 'Area with this hardware ID already exists'})
