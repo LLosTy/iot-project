@@ -52,12 +52,26 @@ router.put('/create',async(req,res) =>{
         return res.status(400).json({ error: "Please specify areaName, hardwareId and ownerId" });
     }
 })
-//TODO Delete an Area route
+//TODO Delete an Area route based on Area ID
+
+router.delete('/',async(req,res) => {
+    try{
+        const result = await Area.deleteOne({
+            "_id":req.query.areaId,
+            "ownerId":req.query.userId
+        })
+        res.status(200).json({message: result})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message: 'Internal Server Error'})
+    }
+
+})
+
 
 //TODO Get Areas based on userID
 
 router.get('/', async(req,res) => {
-    // console.log(req.query.userId)
     try{
         const userExists = await User.find({_id:req.query.userId})
         if(Object.keys(userExists).length === 0){
@@ -74,7 +88,6 @@ router.get('/', async(req,res) => {
     }catch(error){
         res.status(500).json({message: 'Internal Server Error'})
     }
-
 })
 
 //TODO Update an Area
