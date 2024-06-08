@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
                 $lte: new Date(dateTo)
             };
         } else if (device) {
-            query.hardwareId = device;
+            query._id = device;
         }
 
         console.log(query);
