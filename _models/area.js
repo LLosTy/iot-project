@@ -13,13 +13,15 @@ const areaSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    viewers:{
-        type: Array,
-        viewerId:{
-            type: mongoose.Schema.Types.ObjectId,
-            required: false
+    viewers:[
+        {
+            type: Array,
+            viewerId:{
+                type: mongoose.Schema.Types.ObjectId,
+                required: false
+            }
         }
-    },
+    ],
     notifications:{
         notification:{
             timestamp:{

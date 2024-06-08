@@ -121,6 +121,7 @@ router.put('/updateAreaName', async (req, res) =>{
 router.put('/addViewer', async(req,res) => {
     if(req.body.userId && req.body.areaId){
         try{
+            //TODO validate if the user adding a viewer is an owner
             const exists = await User.find({_id:req.body.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
@@ -128,7 +129,11 @@ router.put('/addViewer', async(req,res) => {
                     {$push: {"viewers":{"viewerId": req.body.userId}}},
                     {new:true}
                 )
-                res.status(200).json({message: result})
+                if(result === null){
+                    res.status(409).json({message: "Please specify a valid area ID"})
+                }else{
+                    res.status(200).json({message: result})
+                }
             }else{
                 res.status(409).json({message: "Please specify a valid user ID"})
             }
@@ -140,6 +145,31 @@ router.put('/addViewer', async(req,res) => {
 })
 
 //TODO Remove a viewer route
+router.put('/removeViewer', async(req,res) => {
+    if(req.body.userId && req.body.areaId){
+        try{
+            //TODO validate if the user removing a viewer is an owner
+            const exists = await User.find({_id:req.body.userId})
+            if(Object.keys(exists).length !== 0){
+                const result = await Area.findOneAndUpdate(
+                    {_id:req.body.areaId},
+                    {$pull: {viewers:{viewerId: req.body.userId}}},
+                    {new:true}
+                )
+                if(result === null){
+                    res.status(409).json({message: "Please specify a valid area ID"})
+                }else{
+                    res.status(200).json({message: result})
+                }
+            }else{
+                res.status(409).json({message: "Please specify a valid user ID"})
+            }
+        }catch(error){
+            console.log(error)
+            res.status(500).json({message: "An error occurred while adding user to viewers"})
+        }
+    }
+})
 
 //TODO Set thresholdMin
 
