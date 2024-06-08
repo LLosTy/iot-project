@@ -118,6 +118,10 @@ router.put('/updateAreaName', async (req, res) =>{
 
 //TODO Add a viewer route
 
+//OPTIMIZE addViewer and removeViewer are basically the same, one just has push the other pull
+//figure out how to make it one endpoint instead of two, maybe send it in query params like push / pull
+//But if you do that, you NEED to validate the sent query params cause you dont want an outsider to delete the whole thing or something
+
 router.put('/addViewer', async(req,res) => {
     if(req.body.userId && req.body.areaId){
         try{
