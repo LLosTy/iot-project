@@ -65,7 +65,6 @@ router.delete('/',async(req,res) => {
         console.log(error)
         res.status(500).json({message: 'Internal Server Error'})
     }
-
 })
 
 
@@ -90,7 +89,26 @@ router.get('/', async(req,res) => {
     }
 })
 
-//TODO Update an Area
+//TODO Update an Area name
+
+router.put('/updateAreaName', async (req, res) =>{
+    if(req.body.userId && req.body.areaName && req.body.areaId){
+        try{
+            const area = await Area.findOneAndUpdate({
+                _id: req.body.areaId,
+                ownerId: req.body.userId
+            }, {areaName: req.body.areaName}, {new: true})
+            //new: true makes sure to return the document after it was updated
+
+            res.status(200).json({message: area})
+        }catch(error){
+            console.log(error)
+            res.status(500).json({message: 'Error while updating areaName'})
+        }
+    }else{
+        res.status(409).json({message: 'Please include new Area Name and user Id'})
+    }
+})
 
 //TODO Add hardwareID to area route
 
