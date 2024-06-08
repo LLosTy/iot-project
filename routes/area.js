@@ -22,6 +22,8 @@ router.put('/create',async(req,res) =>{
             //TODO lookup ownerId and iterate through viewers and also ownerId != viewerId
             const [areaExists, hardwareExists, userExists] = await Promise.all([
                 Area.find({ hardwareId }).lean(),
+                //TODO check if userId owns hardwareId -- just add userId to device find
+
                 Device.find({ hardwareId }).lean(),
                 User.find({_id:ownerId}).lean()
             ]);
@@ -115,6 +117,27 @@ router.put('/updateAreaName', async (req, res) =>{
 //TODO Remove hardwareID from area route
 
 //TODO Add a viewer route
+
+router.put('/addViewer', async(req,res) => {
+    if(req.body.userId && req.body.areaId){
+        try{
+            const exists = await User.find({_id:req.body.userId})
+            if(Object.keys(exists).length !== 0){
+                const result = await Area.findOneAndUpdate(
+                    {_id:req.body.areaId},
+                    {$push: {"viewers":{"viewerId": req.body.userId}}},
+                    {new:true}
+                )
+                res.status(200).json({message: result})
+            }else{
+                res.status(409).json({message: "Please specify a valid user ID"})
+            }
+        }catch(error){
+            console.log(error)
+            res.status(500).json({message: "An error occurred while adding user to viewers"})
+        }
+    }
+})
 
 //TODO Remove a viewer route
 

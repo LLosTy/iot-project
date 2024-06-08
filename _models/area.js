@@ -14,6 +14,7 @@ const areaSchema = new mongoose.Schema({
         required: true
     },
     viewers:{
+        type: Array,
         viewerId:{
             type: mongoose.Schema.Types.ObjectId,
             required: false
