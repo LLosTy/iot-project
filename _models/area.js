@@ -60,6 +60,18 @@ const areaSchema = new mongoose.Schema({
 
 })
 
+areaSchema.pre('findOneAndUpdate', function (next) {
+    const update = this.getUpdate();
+    const thresholdMin = update.$set ? update.$set.thresholdMin : update.thresholdMin;
+    const thresholdMax = update.$set ? update.$set.thresholdMax : update.thresholdMax;
+
+    if (thresholdMin !== undefined && thresholdMax !== undefined && thresholdMin > thresholdMax && thresholdMin < -40 || thresholdMax > 80) {
+            next(new Error('Invalid threshold values'));
+    } else {
+        next();
+    }
+});
+
 const Area = mongoose.models.Area || mongoose.model("Area",areaSchema,"area")
 
 module.exports = Area

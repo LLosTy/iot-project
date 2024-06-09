@@ -175,9 +175,28 @@ router.put('/removeViewer', async(req,res) => {
     }
 })
 
-//TODO Set thresholdMin
+router.put('/setThreshold',async(req,res) => {
+    if (req.body.areaId && req.body.userId && req.body.newMin){
+        try{
+            const area = await Area.findOneAndUpdate({
+                _id: req.body.areaId,
+                ownerId: req.body.userId,
+            }, { thresholdMin: req.body.newMin, thresholdMax: req.body.newMax }, {new:true, runValidators: true })
 
-//TODO Set thresholdMax
+            if(area){
+                res.status(200).json({message: area})
+            }else{
+                res.status(409).json({message: "Could not find area"})
+            }
+        }catch(error){
+            console.log(error.message)
+            res.status(500).json({message:"Internal server error: " + error.message})
+        }
+    }else{
+        res.status(409).json({message: "Please specify areaId, userId and newMin"})
+    }
+})
+
 
 //TODO Set up websocket to fetch new data from temps based on hardwareID
 
