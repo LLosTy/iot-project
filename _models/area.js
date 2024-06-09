@@ -22,6 +22,16 @@ const areaSchema = new mongoose.Schema({
             }
         }
     ],
+    thresholdMin:{
+        type: Number,
+        required: true,
+        default: 15
+    },
+    thresholdMax:{
+        type: Number,
+        required: true,
+        default: 30
+    },
     notifications:{
         notification:{
             timestamp:{
