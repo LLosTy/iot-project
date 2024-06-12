@@ -2,7 +2,7 @@ const express = require('express')
 const Temperature = require("../_models/temperature.js")
 const router = express.Router()
 
-
+//TODO: ADD Gateway Token verification for as a wrapper for all calls (Middleware possible)
 // GET request handler for fetching temperature data
 router.get('/', async (req, res) => {
     try {
