@@ -78,8 +78,6 @@ router.delete('/',async(req,res) => {
 router.get('/getArea', async(req,res) => {
     if(req.query.areaId){
         try{
-            console.log("got to getArea",req.query.areaId)
-
             const result = await Area.findOne({"_id": req.query.areaId})
             res.status(200).json(result)
         }catch(error){
