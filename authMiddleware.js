@@ -1,8 +1,22 @@
 const crypto = require('crypto');
-require('dotenv').config({path:'.env.local'})
-const Gateway = require("./_models/gateway"); // Adjust the path as necessary
-const { generateExpectedToken } = require("./_lib/hash")
+require('dotenv').config();
+const Gateway = require('./models/Gateway'); // Adjust the path as necessary
 
+// Helper function to generate the expected token
+const generateExpectedToken = (lastLogin, loginName) => {
+    const loginEncode = process.env.LOGIN_ENCODE;
+    if (!loginEncode) {
+        throw new Error('LOGIN_ENCODE environment variable is not defined');
+    }
+
+    // Prepare the data to be hashed
+    const data = `${lastLogin.toISOString()}${loginName}${loginEncode}`;
+
+    // Create SHA-256 hash
+    const hash = crypto.createHash('sha256').update(data).digest('hex');
+
+    return hash;
+};
 
 // Middleware to check token
 const authMiddleware = async (req, res, next) => {
@@ -41,15 +55,3 @@ const authMiddleware = async (req, res, next) => {
 };
 
 module.exports = authMiddleware;
-
-
-// Without a defined matcher, this one line applies next-auth
-// to the entire project
-//export { default } from "next-auth/middleware"
-
-// Applies next-auth only to matching routes - can be regex
-// Ref: https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-// export const config = { matcher: ["/extra", "/dashboard"] }
-
-
-

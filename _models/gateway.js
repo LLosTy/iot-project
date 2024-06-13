@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { type } = require("os");
 
 const gatewaySchema = new mongoose.Schema({
     hardwareId: {
@@ -17,10 +18,19 @@ const gatewaySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    timestamp: {
+    created_at: {
         type: Date,
         default: new Date()
-    }
+    },
+    last_login: {
+        type: Date,
+        default: new Date(),
+        required: true
+    },
+    last_received_comms: {
+        type: Array,
+        required: false
+    },
 })
 const Gateway = mongoose.models.Gateway || mongoose.model("Gateway", gatewaySchema, 'gateways')
 
