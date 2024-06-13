@@ -75,10 +75,25 @@ router.delete('/',async(req,res) => {
     }
 })
 
+router.get('/getArea', async(req,res) => {
+    if(req.query.areaId){
+        try{
+            console.log("got to getArea",req.query.areaId)
+
+            const result = await Area.findOne({"_id": req.query.areaId})
+            res.status(200).json(result)
+        }catch(error){
+            res.status(500).json({message: 'Internal Server Error'})
+        }
+    }else{
+        res.status(409).json({message: 'Please specify areaId'})
+    }
+})
+
 
 //TODO Get Areas based on userID
 
-router.get('/', async(req,res) => {
+router.get('/getUserAreas', async(req,res) => {
     try{
         const userExists = await User.find({_id:req.query.userId})
         if(Object.keys(userExists).length === 0){
