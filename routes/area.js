@@ -4,6 +4,12 @@ const express = require("express");
 const router = express.Router()
 const Device = require("../_models/device")
 const User = require("../_models/users")
+const cors = require("cors");
+
+router.use(cors({
+    origin: 'http://localhost:3001'
+}));
+
 
 //TODO maybe create a validation middleware for users, devices etc ..
 
