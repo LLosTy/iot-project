@@ -7,7 +7,7 @@ const User = require("../_models/users")
 const cors = require("cors");
 
 router.use(cors({
-    origin: 'http://localhost:3001'
+    origin: 'http://localhost:3000'
 }));
 
 
@@ -103,7 +103,7 @@ router.get('/getUserAreas', async(req,res) => {
                     { viewers: { $elemMatch: { viewerId: req.query.userId } } }
                 ]
             });
-            res.json({message: areas})
+            res.json(areas)
         }
     }catch(error){
         res.status(500).json({message: 'Internal Server Error'})
