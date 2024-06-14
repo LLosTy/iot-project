@@ -1,22 +1,8 @@
 const crypto = require('crypto');
-require('dotenv').config();
-const Gateway = require('./models/Gateway'); // Adjust the path as necessary
+require('dotenv').config({path:'.env.local'})
+const Gateway = require("./_models/gateway"); // Adjust the path as necessary
+const { generateGatewayToken } = require("./_lib/hash")
 
-// Helper function to generate the expected token
-const generateExpectedToken = (lastLogin, loginName) => {
-    const loginEncode = process.env.LOGIN_ENCODE;
-    if (!loginEncode) {
-        throw new Error('LOGIN_ENCODE environment variable is not defined');
-    }
-
-    // Prepare the data to be hashed
-    const data = `${lastLogin.toISOString()}${loginName}${loginEncode}`;
-
-    // Create SHA-256 hash
-    const hash = crypto.createHash('sha256').update(data).digest('hex');
-
-    return hash;
-};
 
 // Middleware to check token
 const authMiddleware = async (req, res, next) => {
@@ -25,6 +11,12 @@ const authMiddleware = async (req, res, next) => {
 
     if (!authorization) {
         return res.status(401).json({ message: 'Authorization token missing' });
+    }
+
+    // Extract the token from the "Bearer" scheme
+    const token = authorization.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Invalid authorization format' });
     }
 
     if (!_id) {
@@ -39,10 +31,10 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // Generate the expected token
-        const expectedToken = generateExpectedToken(gateway.last_login, gateway.login_name);
-
+        const expectedToken = generateGatewayToken(gateway.last_login, gateway.login_name);
+        
         // Compare tokens
-        if (authorization !== expectedToken) {
+        if (token !== expectedToken) {
             return res.status(403).json({ message: 'Invalid token' });
         }
 
