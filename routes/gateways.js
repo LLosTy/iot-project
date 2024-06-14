@@ -1,8 +1,9 @@
 const express = require('express')
 const Gateway = require("../_models/gateway.js")
+const Temperature = require('../_models/temperature.js')
 const router = express.Router()
 const { generateGatewayToken } = require("../_lib/hash.js")
-const authMiddleware = require("../middleware.js")
+const authMiddleware = require("../authMiddleware.js")
 
 
 /*TODO: Add new Gateway to the DB
@@ -85,11 +86,15 @@ router.post('/get-comms-token', async (req, res) => {
                 return res.status(404).json({ message: 'Account does not exist' });
             }
 
+            // Update the last_login field
+            gateway.last_login = new Date();
+            await gateway.save();
+
             // Generate the comms token
             const token = generateGatewayToken(gateway.last_login, gateway.login_name);
 
             // Respond with the token
-            res.json({ message: 'Token generated successfully', token });
+            res.json({ message: 'Token generated successfully', token, gatewayId: gateway._id });
 
         } catch (error) {
             console.error('Error while generating comms token:', error);
@@ -100,10 +105,9 @@ router.post('/get-comms-token', async (req, res) => {
     }
 });
 
-//TODO: Update Gateway -> Add new Devices to it, add/rename Gateway alias
-//TODO: Update Gateway -> Remove Devices from it, remove Gateway alias
+//TODO: Update Gateway
 router.patch('/update', authMiddleware, async (req, res) => {
-    const { _id, addDevices, removeDevices, alias } = req.body;
+    const { _id, hardwareIds, alias } = req.body;
 
     if (!_id) {
         return res.status(400).json({ error: "Please specify the gateway _id!" });
@@ -116,19 +120,23 @@ router.patch('/update', authMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'Gateway not found' });
         }
 
-        // Update devices
-        if (addDevices && Array.isArray(addDevices)) {
-            gateway.hardwareId = [...new Set([...gateway.hardwareId, ...addDevices])]; // Ensure no duplicates
-        }
-        if (removeDevices && Array.isArray(removeDevices)) {
-            gateway.hardwareId = gateway.hardwareId.filter(id => !removeDevices.includes(id));
+        // Update hardwareIds if provided
+        if (hardwareIds) {
+            if (!Array.isArray(hardwareIds)) {
+                return res.status(400).json({ error: "Devices should be an array!" });
+            }
+            gateway.hardwareIds = [...new Set([...gateway.hardwareIds, ...hardwareIds])]; // Ensure no duplicates
         }
 
-        // Update alias
-        if (alias === null) {
-            gateway.alias = undefined; // Remove alias
-        } else if (alias) {
-            gateway.alias = alias; // Add or rename alias
+        // Update alias if provided
+        if (alias !== undefined) {
+            if (alias === null) {
+                gateway.alias = undefined; // Remove alias
+            } else if (typeof alias === 'string') {
+                gateway.alias = alias; // Add or rename alias
+            } else {
+                return res.status(400).json({ error: "Alias should be a string or null!" });
+            }
         }
 
         // Save the updated gateway
@@ -139,6 +147,48 @@ router.patch('/update', authMiddleware, async (req, res) => {
 
     } catch (error) {
         console.error('Error while updating gateway:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+//TODO: Write new temperatures after Gateway verification and updating gateways last_received_comms
+router.post('/add-temperatures', authMiddleware, async (req, res) => {
+    const { hardwareId, temperatures } = req.body;
+
+    if (!hardwareId || !temperatures || !Array.isArray(temperatures)) {
+        return res.status(400).json({ error: "Please specify the hardwareId and an array of temperatures!" });
+    }
+
+    try {
+        // Find the gateway by hardwareId
+        const gateway = await Gateway.findOne({ hardwareIds: hardwareId });
+        if (!gateway) {
+            return res.status(404).json({ message: 'Gateway not found' });
+        }
+
+        // Verify the hardwareId is part of the gateway's hardwareIds
+        if (!gateway.hardwareIds.includes(hardwareId)) {
+            return res.status(403).json({ message: 'Hardware ID not associated with this gateway' });
+        }
+
+        // Update the last_received_comms field
+        gateway.last_received_comms.push(new Date());
+        await gateway.save();
+
+        // Add new temperature records
+        const temperatureRecords = temperatures.map(temp => ({
+            ...temp,
+            hardwareId, // Ensure hardwareId is included in each temperature record
+            timestamp: new Date(temp.timestamp) // Ensure the timestamp is properly formatted
+        }));
+
+        const result = await Temperature.insertMany(temperatureRecords);
+
+        // Respond with the created temperature records
+        res.json({ message: 'Temperatures added successfully', temperatures: result });
+
+    } catch (error) {
+        console.error('Error while adding temperatures:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });

@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const { type } = require("os");
 
 const gatewaySchema = new mongoose.Schema({
-    hardwareId: {
+    hardwareIds: {
         type: Array,
         required: false,
     },
