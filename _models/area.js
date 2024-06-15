@@ -13,15 +13,13 @@ const areaSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    viewers:[
-        {
+    viewers:{
             type: Array,
             viewerId:{
                 type: mongoose.Schema.Types.ObjectId,
                 required: false
             }
-        }
-    ],
+    },
     thresholdMin:{
         type: Number,
         required: true,
