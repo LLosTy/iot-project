@@ -5,10 +5,7 @@ const router = express.Router()
 const { generateGatewayToken } = require("../_lib/hash.js")
 const authMiddleware = require("../authMiddleware.js")
 
-
-/*TODO: Add new Gateway to the DB
-    Generate Gateway token for comms after adding - Generating from some params 
-*/
+//TODO: FOR ALL -> What if HardwareID doesn't exist anymore
 router.put('/create', async (req, res) => {
     const { hardwareId, alias, login_name, login_pwd } = req.body;
 
@@ -46,7 +43,6 @@ router.put('/create', async (req, res) => {
     }
 });
 
-//TODO: Remove Gateway after its removed from physical location
 router.delete('/remove', authMiddleware, async (req, res) => {
     const { _id, login_name } = req.body;
 
@@ -74,7 +70,6 @@ router.delete('/remove', authMiddleware, async (req, res) => {
     }
 });
 
-//TODO: Get comms token after verification If account exists, else error of non-existnant acc
 router.post('/get-comms-token', async (req, res) => {
     const { login_name, login_pwd } = req.body;
 
@@ -105,7 +100,6 @@ router.post('/get-comms-token', async (req, res) => {
     }
 });
 
-//TODO: Update Gateway
 router.patch('/update', authMiddleware, async (req, res) => {
     const { _id, hardwareIds, alias } = req.body;
 
@@ -151,7 +145,6 @@ router.patch('/update', authMiddleware, async (req, res) => {
     }
 });
 
-//TODO: Write new temperatures after Gateway verification and updating gateways last_received_comms
 router.post('/add-temperatures', authMiddleware, async (req, res) => {
     const { hardwareId, temperatures } = req.body;
 
