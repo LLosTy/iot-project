@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, Container, IconButton, Toolbar, Typography} from "@mui/material";
 import Link from "next/link";
 import MemoryIcon from '@mui/icons-material/Memory';
 import AuthContext from './_auth'
@@ -34,7 +34,7 @@ export default function RootLayout({ session, children }) {
             </IconButton>
               <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                   <a href={'/'}>
-                      IoT-App
+                      IoTio
                       <MemoryIcon/>
                   </a>
 
@@ -64,7 +64,18 @@ export default function RootLayout({ session, children }) {
           </Toolbar>
         </AppBar>
       </Box>
-      <main>{children}</main>
+          <Container
+              component="main"
+              style={{ flex: 1 }}
+              sx={{
+                  mt: 8,
+                  mb: 2,
+              }}
+          >
+              <Box>{children}</Box>
+          </Container>
+
+
       </AuthContext>
       </body>
       </html>
