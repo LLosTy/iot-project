@@ -18,6 +18,10 @@ const areaSchema = new mongoose.Schema({
             viewerId:{
                 type: mongoose.Schema.Types.ObjectId,
                 required: false
+            },
+            email:{
+                type: String,
+                required:false
             }
     },
     thresholdMin:{

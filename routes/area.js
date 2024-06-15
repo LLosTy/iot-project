@@ -145,11 +145,11 @@ router.put('/addViewer', async(req,res) => {
     if(req.body.userId && req.body.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
-            const exists = await User.find({_id:req.body.userId})
+            const exists = await User.findOne({_id:req.body.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
                     {_id:req.body.areaId},
-                    {$push: {"viewers":{"viewerId": req.body.userId}}},
+                    {$push: {"viewers":{"viewerId": req.body.userId,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){
@@ -176,7 +176,7 @@ router.put('/removeViewer', async(req,res) => {
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
                     {_id:req.body.areaId},
-                    {$pull: {viewers:{viewerId: req.body.userId}}},
+                    {$pull: {"viewers":{"viewerId": req.body.userId,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){
