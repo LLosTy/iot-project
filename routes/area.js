@@ -142,14 +142,14 @@ router.put('/updateAreaName', async (req, res) =>{
 //But if you do that, you NEED to validate the sent query params cause you dont want an outsider to delete the whole thing or something
 
 router.put('/addViewer', async(req,res) => {
-    if(req.body.userId && req.body.areaId){
+    if(req.query.userId && req.query.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
-            const exists = await User.findOne({_id:req.body.userId})
+            const exists = await User.findOne({_id:req.query.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
-                    {_id:req.body.areaId},
-                    {$push: {"viewers":{"viewerId": req.body.userId,"email" :exists.email}}},
+                    {_id:req.query.areaId},
+                    {$push: {"viewers":{"viewerId": req.query.userId,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){
@@ -169,14 +169,14 @@ router.put('/addViewer', async(req,res) => {
 
 //TODO Remove a viewer route
 router.put('/removeViewer', async(req,res) => {
-    if(req.body.userId && req.body.areaId){
+    if(req.query.userId && req.query.areaId){
         try{
             //TODO validate if the user removing a viewer is an owner
-            const exists = await User.find({_id:req.body.userId})
+            const exists = await User.find({_id:req.query.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
-                    {_id:req.body.areaId},
-                    {$pull: {"viewers":{"viewerId": req.body.userId,"email" :exists.email}}},
+                    {_id:req.query.areaId},
+                    {$pull: {"viewers":{"viewerId": req.query.userId,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){

@@ -16,7 +16,7 @@ app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
 
 app.use(cors({
-    origin: 'http://localhost:3001'
+    origin: 'http://localhost:3000'
 }));
 
 

@@ -26,7 +26,7 @@ const AreaItem = ({
         <Card sx={{ maxWidth: 345 }}>
             <Link href={(`/area/${id}`)}>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
+                    <Typography gutterBottom variant="body1" color="text.primary" component="div">
                         {areaName}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
