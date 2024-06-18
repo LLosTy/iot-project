@@ -4,7 +4,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import {TextField} from "@mui/material";
+import {IconButton, TextField} from "@mui/material";
+import {useState} from "react";
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 const style = {
     position: 'absolute',
@@ -20,17 +24,16 @@ const style = {
 
 };
 
-export default function BasicModal() {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+const AddViewerModal= ({ open ,onClose, onAddViewer }) => {
+
+    const [username, setUserName] = useState('');
+
 
     return (
-        <div>
-            <Button onClick={handleOpen}>Open modal</Button>
+        <>
             <Modal
                 open={open}
-                onClose={handleClose}
+                onClose={onClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -41,9 +44,17 @@ export default function BasicModal() {
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' , mt:2}}>
                         <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
                         <TextField id="input-with-sx" variant="standard" fullWidth placeholder="user@email.com" />
+                        <IconButton edge="end" aria-label="add-viewer" color="error" onClick={onClose} sx={{mt:1, mr:1}}>
+                            <CloseIcon />
+                        </IconButton>
+                        <IconButton edge="end" aria-label="add-viewer" color="success" onClick={onClose} sx={{mt:1}}>
+                            <AddIcon />
+                        </IconButton>
                     </Box>
                 </Box>
             </Modal>
-        </div>
+        </>
     );
 }
+
+export default AddViewerModal

@@ -14,14 +14,34 @@ const style = {
     borderColor: 'divider',
     backgroundColor: 'background.paper',
 };
+
+
+
 const Viewers = ({viewers :initialViewers , areaId}) => {
+
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const addViewer = (newViewer) => {
+        setViewers([...viewers, newViewer]);
+        closeModal(); // Optionally close the modal after adding the viewer
+    };
+
     const [viewers, setViewers] = useState(initialViewers);
 
     useEffect(() => {
         setViewers(initialViewers);
     }, [initialViewers]);
 
-    console.log(areaId)
+    // console.log(areaId)
 
     const handleDelete = (viewer, areaId) => {
         console.log("areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
@@ -122,14 +142,14 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
                     )) : <div></div>}
                 <ListItem
                     secondaryAction={
-                        <IconButton edge="end" aria-label="delete" color="success" onClick={() => handleAdd()}>
+                        <IconButton edge="end" aria-label="add-viewer" color="success" onClick={openModal}>
                             <PersonAddAlt1Icon />
                         </IconButton>
                     }
                 >
                 </ListItem>
-                    <AddViewerModal></AddViewerModal>
                 </List>
+                <AddViewerModal open={isModalOpen} onClose={closeModal}  />
             </Grid>
         );
     } else {
