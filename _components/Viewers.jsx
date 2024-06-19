@@ -44,7 +44,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
     // console.log(areaId)
 
     const handleDelete = (viewer, areaId) => {
-        console.log("areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
+        console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
         axios({
             method: 'put',
             baseURL: 'http://localhost:8080/area/removeViewer',

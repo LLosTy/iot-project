@@ -142,14 +142,14 @@ router.put('/updateAreaName', async (req, res) =>{
 //But if you do that, you NEED to validate the sent query params cause you dont want an outsider to delete the whole thing or something
 
 router.put('/addViewer', async(req,res) => {
-    if(req.query.userId && req.query.areaId){
+    if(req.query.userEmail && req.query.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
-            const exists = await User.findOne({_id:req.query.userId})
+            const exists = await User.findOne({email:req.query.userEmail})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
                     {_id:req.query.areaId},
-                    {$push: {"viewers":{"viewerId": req.query.userId,"email" :exists.email}}},
+                    {$push: {"viewers":{"viewerId": exists._id  ,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){
@@ -172,13 +172,14 @@ router.put('/removeViewer', async(req,res) => {
     if(req.query.userId && req.query.areaId){
         try{
             //TODO validate if the user removing a viewer is an owner
-            const exists = await User.find({_id:req.query.userId})
+            const exists = await User.findOne({_id:req.query.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
                     {_id:req.query.areaId},
                     {$pull: {"viewers":{"viewerId": req.query.userId,"email" :exists.email}}},
                     {new:true}
                 )
+                // console.log("Result of delete: ",result, "email:", exists.email)
                 if(result === null){
                     res.status(409).json({message: "Please specify a valid area ID"})
                 }else{

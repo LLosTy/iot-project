@@ -1,66 +1,66 @@
 const mongoose = require("mongoose");
 
-const areaSchema = new mongoose.Schema({
-    areaName:{
-      type: String,
-      required: true,
+const viewerSchema = new mongoose.Schema({
+    viewerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
     },
-    hardwareId:{
+    email: {
         type: String,
-        required: false,
+        required: false
+    }
+}, { _id: false }); 
+
+const notificationSchema = new mongoose.Schema({
+    timestamp: {
+        type: Date,
+        default: Date.now
     },
-    ownerId:{
+    value: {
+        type: Number,
+        required: false
+    },
+    thresholdMin: {
+        type: Number,
+        required: false
+    },
+    thresholdMax: {
+        type: Number,
+        required: false
+    },
+    acknowledged: {
+        type: Boolean,
+        required: false,
+        default: false
+    }
+}, { _id: false });
+
+const areaSchema = new mongoose.Schema({
+    areaName: {
+        type: String,
+        required: true
+    },
+    hardwareId: {
+        type: String,
+        required: false
+    },
+    ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    viewers:{
-            type: Array,
-            viewerId:{
-                type: mongoose.Schema.Types.ObjectId,
-                required: false
-            },
-            email:{
-                type: String,
-                required:false
-            }
-    },
-    thresholdMin:{
+    viewers: [viewerSchema],
+    thresholdMin: {
         type: Number,
         required: true,
         default: 15
     },
-    thresholdMax:{
+    thresholdMax: {
         type: Number,
         required: true,
         default: 30
     },
-    notifications:{
-        notification:{
-            timestamp:{
-                type: Date,
-                default: new Date()
-            },
-            value:{
-                type:Number,
-                required: false,
-            },
-            thresholdMin:{
-                type:Number,
-                required:false,
-            },
-            thresholdMax:{
-                type:Number,
-                required:false,
-            },
-            acknowledged:{
-                type:Boolean,
-                required:false,
-                default:false
-            }
-        }
-    }
-
-})
+    notifications: [notificationSchema]
+});
 
 areaSchema.pre('findOneAndUpdate', function (next) {
     const update = this.getUpdate();
