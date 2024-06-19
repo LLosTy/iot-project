@@ -44,7 +44,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
     // console.log(areaId)
 
     const handleDelete = (viewer, areaId) => {
-        console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
+        // console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
         axios({
             method: 'put',
             baseURL: 'http://localhost:8080/area/removeViewer',
@@ -59,38 +59,6 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
                 //TODO toast
                 console.log(response.data);
                 setViewers(viewers.filter(viewer => viewer.viewerId !== viewer.viewerId));
-            })
-            .catch(error => {
-                //handle error
-                //TODO toast
-                console.error("Caught Error",error);
-            });
-        //TODO axios Delete call to BE
-    };
-
-    const handleAdd = () => {
-
-        let viewerId = new mongoose.Types.ObjectId("666b49cbd0dc6c1730457df4")
-        let areaId = new mongoose.Types.ObjectId("666add362adf262f9d478c83");
-
-        let viewer = [
-            viewerId,
-            areaId
-        ]
-
-        axios({
-            method: 'put',
-            baseURL: 'http://localhost:8080/area/addViewer',
-            params: {
-                userId:viewerId,
-                areaId:areaId
-            },
-            responseType: 'json',
-        })
-            .then(response => {
-                // handle success
-                //TODO toast
-                setViewers(viewers.push(viewer));
             })
             .catch(error => {
                 //handle error
@@ -149,7 +117,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
                 >
                 </ListItem>
                 </List>
-                <AddViewerModal open={isModalOpen} onClose={closeModal}  />
+                <AddViewerModal open={isModalOpen} onClose={closeModal}  areaId={areaId} onAddViewer={addViewer}/>
             </Grid>
         );
     } else {

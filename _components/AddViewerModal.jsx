@@ -9,6 +9,7 @@ import {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import axios from "axios";
 
 const style = {
     position: 'absolute',
@@ -24,9 +25,46 @@ const style = {
 
 };
 
-const AddViewerModal= ({ open ,onClose, onAddViewer }) => {
+const AddViewerModal= ({ open ,onClose, onAddViewer ,areaId}) => {
 
-    const [username, setUserName] = useState('');
+    // const [username, setUserName] = useState('');
+
+    const handleAddViewer = async () => {
+        try {
+            console.log(areaId, email)
+            const response = axios({
+                method: 'put',
+                baseURL: 'http://localhost:8080/area/addViewer',
+                params: {
+                    areaId:areaId,
+                    userEmail:email,
+                },
+                responseType: 'json',
+            }).then(response => {
+                // handle success
+                //TODO toast
+                // console.log(response.data.newViewer);
+                onAddViewer(response.data.newViewer);
+
+            })
+                .catch(error => {
+                    //handle error
+                    //TODO toast
+                    console.error("Caught Error",error);
+                });
+            // const newViewer = response;
+            // onAddViewer(newViewer);
+        } catch (error) {
+            console.error('Error adding viewer:', error);
+        }
+    };
+
+    const [email, setEmail] = useState('');
+
+    // Step 3: Handle input changes
+    const handleChange = (event) => {
+        setEmail(event.target.value);
+    };
 
 
     return (
@@ -43,11 +81,11 @@ const AddViewerModal= ({ open ,onClose, onAddViewer }) => {
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'flex-end' , mt:2}}>
                         <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                        <TextField id="input-with-sx" variant="standard" fullWidth placeholder="user@email.com" />
+                        <TextField id="input-with-sx" variant="standard" fullWidth placeholder="user@email.com" value={email} onChange={handleChange}/>
                         <IconButton edge="end" aria-label="add-viewer" color="error" onClick={onClose} sx={{mt:1, mr:1}}>
                             <CloseIcon />
                         </IconButton>
-                        <IconButton edge="end" aria-label="add-viewer" color="success" onClick={onClose} sx={{mt:1}}>
+                        <IconButton edge="end" aria-label="add-viewer" color="success" onClick={handleAddViewer} sx={{mt:1}}>
                             <AddIcon />
                         </IconButton>
                     </Box>

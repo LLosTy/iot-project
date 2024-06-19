@@ -155,7 +155,11 @@ router.put('/addViewer', async(req,res) => {
                 if(result === null){
                     res.status(409).json({message: "Please specify a valid area ID"})
                 }else{
-                    res.status(200).json({message: result})
+                    const newViewer = {
+                        email:exists.email,
+                        viewerId: exists._id
+                    }
+                    res.status(200).json({message: result, newViewer: newViewer})
                 }
             }else{
                 res.status(409).json({message: "Please specify a valid user ID"})
