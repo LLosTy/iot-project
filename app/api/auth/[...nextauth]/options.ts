@@ -98,12 +98,13 @@ export const options: NextAuthOptions = {
             return token
         },
         session({ session, token }) {
-            if(session?.user !== undefined){
-                if (token.id) {
-                    session.user.id = token.id
-                }
+  console.log(token);
+
+            if (session?.user && token.id) {
+                session.user.id = token.id;
             }
-            return session
-        },
-      },
+
+            return session;
+        }
+    },
 }

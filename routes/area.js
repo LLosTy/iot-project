@@ -4,6 +4,12 @@ const express = require("express");
 const router = express.Router()
 const Device = require("../_models/device")
 const User = require("../_models/users")
+const cors = require("cors");
+
+router.use(cors({
+    origin: 'http://localhost:3000'
+}));
+
 
 //TODO maybe create a validation middleware for users, devices etc ..
 
@@ -69,10 +75,23 @@ router.delete('/',async(req,res) => {
     }
 })
 
+router.get('/getArea', async(req,res) => {
+    if(req.query.areaId){
+        try{
+            const result = await Area.findOne({"_id": req.query.areaId})
+            res.status(200).json(result)
+        }catch(error){
+            res.status(500).json({message: 'Internal Server Error'})
+        }
+    }else{
+        res.status(409).json({message: 'Please specify areaId'})
+    }
+})
+
 
 //TODO Get Areas based on userID
 
-router.get('/', async(req,res) => {
+router.get('/getUserAreas', async(req,res) => {
     try{
         const userExists = await User.find({_id:req.query.userId})
         if(Object.keys(userExists).length === 0){
@@ -84,7 +103,7 @@ router.get('/', async(req,res) => {
                     { viewers: { $elemMatch: { viewerId: req.query.userId } } }
                 ]
             });
-            res.json({message: areas})
+            res.json(areas)
         }
     }catch(error){
         res.status(500).json({message: 'Internal Server Error'})
@@ -123,20 +142,24 @@ router.put('/updateAreaName', async (req, res) =>{
 //But if you do that, you NEED to validate the sent query params cause you dont want an outsider to delete the whole thing or something
 
 router.put('/addViewer', async(req,res) => {
-    if(req.body.userId && req.body.areaId){
+    if(req.query.userEmail && req.query.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
-            const exists = await User.find({_id:req.body.userId})
+            const exists = await User.findOne({email:req.query.userEmail})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
-                    {_id:req.body.areaId},
-                    {$push: {"viewers":{"viewerId": req.body.userId}}},
+                    {_id:req.query.areaId},
+                    {$push: {"viewers":{"viewerId": exists._id  ,"email" :exists.email}}},
                     {new:true}
                 )
                 if(result === null){
                     res.status(409).json({message: "Please specify a valid area ID"})
                 }else{
-                    res.status(200).json({message: result})
+                    const newViewer = {
+                        email:exists.email,
+                        viewerId: exists._id
+                    }
+                    res.status(200).json({message: result, newViewer: newViewer})
                 }
             }else{
                 res.status(409).json({message: "Please specify a valid user ID"})
@@ -150,16 +173,17 @@ router.put('/addViewer', async(req,res) => {
 
 //TODO Remove a viewer route
 router.put('/removeViewer', async(req,res) => {
-    if(req.body.userId && req.body.areaId){
+    if(req.query.userId && req.query.areaId){
         try{
             //TODO validate if the user removing a viewer is an owner
-            const exists = await User.find({_id:req.body.userId})
+            const exists = await User.findOne({_id:req.query.userId})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
-                    {_id:req.body.areaId},
-                    {$pull: {viewers:{viewerId: req.body.userId}}},
+                    {_id:req.query.areaId},
+                    {$pull: {"viewers":{"viewerId": req.query.userId,"email" :exists.email}}},
                     {new:true}
                 )
+                // console.log("Result of delete: ",result, "email:", exists.email)
                 if(result === null){
                     res.status(409).json({message: "Please specify a valid area ID"})
                 }else{
