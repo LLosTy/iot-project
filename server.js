@@ -1,6 +1,7 @@
 // const express = require('express')
 const express = require("express");
 const app = express()
+const cors = require('cors');
 require('dotenv').config({path:'.env.local'})
 //TODO specify the port number inside .env.local
 const port = process.env.SERVER_PORT
@@ -13,6 +14,10 @@ const areaRouter = require("./routes/area")
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
+
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
 
 const mongoose = require('mongoose')
