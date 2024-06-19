@@ -5,15 +5,15 @@ const router = express.Router()
 
 //Get Devices under a UserId
 router.get('/', async (req, res) => {
-    if(req.query.userId){
+    if (req.query.userId) {
         try {
-            const devices = await Device.find({"userId": req.query.userId}).lean() // Retrieve all devices
-            res.json(devices) // Send devices as JSON response
+            const devices = await Device.find({ "userId": req.query.userId }).lean(); // Retrieve all devices
+            res.json(devices); // Send devices as JSON response
         } catch (error) {
-            console.error('Error retrieving devices:', error)
-            res.status(500).json({ message: 'Internal Server Error' })
+            console.error('Error retrieving devices:', error);
+            res.status(500).json({ message: 'Internal Server Error' });
         }
-    }else{
+    } else {
         return res.status(400).json({ error: "Please specify user ID in query params!" });
     }
 });
@@ -42,7 +42,6 @@ router.put('/create', async (req, res) => {
     }
 
 });
-
 
 router.put('/update', async (req, res) => {
     //Had to validate length here, otherwise it would throw a different error if i validated in mongoose

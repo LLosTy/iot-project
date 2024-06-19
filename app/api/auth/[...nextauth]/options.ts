@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import Users from '../../../../_models/users'
 import connectMongoDB from '../../../../_lib/mongodb';
 import bcrypt from 'bcryptjs';
+import { ConnectingAirportsOutlined } from '@mui/icons-material'
 
 
 export const options: NextAuthOptions = {
@@ -72,12 +73,11 @@ export const options: NextAuthOptions = {
             // Determine fields to update based on provider
             if (account?.provider !== undefined){
                 if (account.provider === 'github') {
-                    userData.githubId = String(account.id);
+                    userData.githubId = String(user.id);
                 } else if (account.provider === 'google') {
-                    userData.googleId = String(account.id);
+                    userData.googleId = String(user.id);
                 }
             }
-
 
             // Update or insert user data
             const updatedUser = await Users.findOneAndUpdate(
@@ -88,18 +88,17 @@ export const options: NextAuthOptions = {
 
             // Ensure the user ID is properly set
             user.id = updatedUser._id.toString();
+            console.log(`${user.name} logged to the account`)
             return true;
         },
         jwt({ token, user }) {
-            console.log(token)
-            console.log(user)
             if (user) { // User is available during sign-in
                 token.id = user.id
             }
             return token
         },
         session({ session, token }) {
-            console.log(token);
+  console.log(token);
 
             if (session?.user && token.id) {
                 session.user.id = token.id;

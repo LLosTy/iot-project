@@ -10,10 +10,12 @@ app.use(express.json())
 const deviceRouter = require('./routes/devices')
 const tempsRouter = require('./routes/temperatures')
 const areaRouter = require("./routes/area")
+const gatewayRouter = require("./routes/gateways")
 
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
+app.use("/gateways", gatewayRouter)
 
 app.use(cors({
     origin: 'http://localhost:3000'

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev-test": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -17,7 +18,10 @@
     "@mui/x-charts": "^7.0.0",
     "@mui/x-date-pickers": "^7.1.0",
     "axios": "^1.7.2",
+    "basic-auth": "^2.0.1",
     "bcryptjs": "^2.4.3",
+    "concurrently": "^8.2.2",
+    "crypto": "^1.0.1",
     "cors": "^2.8.5",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
