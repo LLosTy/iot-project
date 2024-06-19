@@ -3,7 +3,8 @@ const Gateway = require("../_models/gateway.js")
 const Temperature = require('../_models/temperature.js')
 const router = express.Router()
 const { generateGatewayToken } = require("../_lib/hash.js")
-const authMiddleware = require("../authMiddleware.js")
+const {authMiddleware, basicAuthMiddleware} = require("../authMiddleware.js")
+
 
 //TODO: FOR ALL -> What if HardwareID doesn't exist anymore
 router.put('/create', async (req, res) => {
@@ -70,8 +71,12 @@ router.delete('/remove', authMiddleware, async (req, res) => {
     }
 });
 
-router.post('/get-comms-token', async (req, res) => {
-    const { login_name, login_pwd } = req.body;
+router.post('/get-comms-token', basicAuthMiddleware, async (req, res) => {
+    const { login_name, login_pwd } = req;
+    console.log(req)
+
+    console.log("Trying to get Gateway token");
+    console.log(login_name, login_pwd);
 
     if (login_name && login_pwd) {
         try {

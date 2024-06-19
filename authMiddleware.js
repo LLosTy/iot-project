@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 require('dotenv').config({path:'.env.local'})
+const basicAuth = require('basic-auth');
 const Gateway = require("./_models/gateway"); // Adjust the path as necessary
 const { generateGatewayToken } = require("./_lib/hash")
 
@@ -46,4 +47,15 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+// Basic Authentication middleware
+const basicAuthMiddleware = (req, res, next) => {
+    const user = basicAuth(req);
+    if (!user || !user.name || !user.pass) {
+        return res.status(401).json({ message: 'Missing or invalid authentication credentials' });
+    }
+    req.login_name = user.name;
+    req.login_pwd = user.pass;
+    next();
+};
+
+module.exports = {authMiddleware, basicAuthMiddleware};
