@@ -9,23 +9,20 @@ router.get('/', async (req, res) => {
         const { dateFrom, dateTo, device } = req.query;
         let query = {};
 
-
         if (dateFrom && dateTo) {
             query.timestamp = {
                 $gte: new Date(dateFrom),
                 $lte: new Date(dateTo)
             };
+            const temps = await Temperature.find(query)
+                .limit((dateFrom && dateTo) || device ? undefined : 20)
+                .lean();
+            res.status(200).json({ temps });
+
         } else if (device) {
-            query._id = device;
+            const temps = await Temperature.find({"payload.client_id":device});
+            res.status(200).json({ temps });
         }
-
-        console.log(query);
-        const temps = await Temperature.find(query)
-            .limit((dateFrom && dateTo) || device ? undefined : 20)
-            .lean();
-        console.log(temps);
-
-        res.status(200).json({ temps });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });

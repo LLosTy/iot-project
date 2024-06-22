@@ -1,22 +1,40 @@
 const mongoose = require("mongoose");
 
 const temperatureSchema = new mongoose.Schema({
-    topic: String,
-    payload: {
-        type: Object,
-        required: true
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
     },
-    qos: Number,
-    retain: Boolean,
-    _msgid: String,
+    topic: {
+        type: String,
+        required: true,
+    },
+    payload: {
+        client_id: {
+            type: String,
+            required: true,
+        },
+        temp: {
+            type: String,
+            required: true,
+        },
+    },
+    qos: {
+        type: Number,
+        required: true,
+    },
+    retain: {
+        type: Boolean,
+        required: true,
+    },
+    _msgid: {
+        type: String,
+        required: true,
+    },
     timestamp: {
         type: Date,
-        required: true
+        required: true,
     },
-    hardwareId: {
-        type: Number,
-        required: true
-    }
 })
 const Temperature = mongoose.models.Temperature || mongoose.model("Temperature", temperatureSchema, 'temperatures')
 

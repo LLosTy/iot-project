@@ -5,6 +5,7 @@ import axios from 'axios';
 import {useSession} from "next-auth/react";
 import AreaItem from '/_components/AreaItem'
 import {Box, Container, Grid} from "@mui/material";
+import AddArea  from '/_components/AddAdrea'
 
 export default function MyAreasPage(){
     const {data: session} = useSession();
@@ -59,6 +60,7 @@ export default function MyAreasPage(){
                 mb: 2,
             }}
         >
+
             {areas.length > 0 ? (
                 <Box>
                     {areas.map((area) => (
@@ -74,6 +76,7 @@ export default function MyAreasPage(){
             ) : (
                 <div>No areas found</div>
             )}
+            <AddArea></AddArea>
 </Container>
     );
 };

@@ -20,6 +20,8 @@ router.get('/hello',async (req,res) =>{
 //TODO Create an Area route
 //TODO more error checking and optimization
 //TODO check if ownerID is real and also viewerID's
+
+//TODO set inUse for device
 router.put('/create',async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
@@ -61,6 +63,8 @@ router.put('/create',async(req,res) =>{
     }
 })
 //TODO Delete an Area route based on Area ID
+
+//TODO set inUse for device
 
 router.delete('/',async(req,res) => {
     try{
