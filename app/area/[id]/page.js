@@ -7,19 +7,20 @@ import Viewers from "/_components/Viewers"
 import {GetTempsByDevice} from "/_lib/actions/temps";
 import TempLineChart from '/_components/TempLineChart'
 
-const AreaPage = () => {
+const AreaPage = ({id}) => {
     const [area, setArea] = useState([]);
+
 
     useEffect(() => {
 
 
         if (id && area.length === 0 ) {
-            console.log(area)
+            console.log(id)
             axios({
                 method: 'get',
                 baseURL: 'http://localhost:8080/area/getArea',
                 params: {
-                    areaId:id
+                    areaId:id.params.id
                 },
                 responseType: 'json',
             })
@@ -47,8 +48,8 @@ const AreaPage = () => {
     }
 
     const params = useParams();
-    const { id } = params;
-    console.log("Area ID in page.js:",id)
+    // const { id } = params;
+    console.log("Area ID in page.js:",id.params.id)
     if(area.length !== 0 && id){
         return (
             <div>
@@ -64,4 +65,5 @@ const AreaPage = () => {
     }
 };
 
-export default AreaPage;
+export default AreaPage
+
