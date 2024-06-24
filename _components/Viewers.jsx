@@ -47,7 +47,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
         // console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
         axios({
             method: 'put',
-            baseURL: 'http://localhost:8080/area/removeViewer',
+            baseURL: process.env.NEXT_PUBLIC_API_URL + '/area/removeViewer',
             params: {
                 areaId:areaId,
                 userId:viewer.viewerId

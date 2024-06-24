@@ -6,6 +6,8 @@ import {useSession} from "next-auth/react";
 import AreaItem from '/_components/AreaItem'
 import {Box, Container, Grid} from "@mui/material";
 import AddArea  from '/_components/AddAdrea'
+import axiosInstance from "/_lib/axiosInstance";
+
 
 export default function MyAreasPage(){
     const {data: session} = useSession();
@@ -17,23 +19,21 @@ export default function MyAreasPage(){
         console.log(loading)
         if (session && loading === true) {
             console.log(areas)
-            axios({
-                method: 'get',
-                baseURL: 'http://localhost:8080/area/getUserAreas',
+            axiosInstance.get('/area/getUserAreas', {
                 params: {
-                    userId: session.user.id
+                    userId: session.user.id,
                 },
-                responseType: 'json',
+                responseType:"json",
             })
                 .then(response => {
-                    // handle success
+                    // Handle success
                     console.log(response.data[0]);
                     setAreas(response.data);
                     setLoading(false);
                 })
                 .catch(error => {
-                    // handle error
-                    console.error("Caught Error",error);
+                    // Handle error
+                    console.error('Caught Error', error);
                     setError(error);
                     setLoading(false);
                 });

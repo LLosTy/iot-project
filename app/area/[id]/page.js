@@ -18,7 +18,7 @@ const AreaPage = () => {
             console.log(id)
             axios({
                 method: 'get',
-                baseURL: 'http://localhost:8080/area/getArea',
+                baseURL: process.env.NEXT_PUBLIC_API_URL + process.env.SERVER_PORT + '/area/getArea',
                 params: {
                     areaId: id
                 },

@@ -34,7 +34,7 @@ const AddViewerModal= ({ open ,onClose, onAddViewer ,areaId}) => {
             console.log(areaId, email)
             const response = axios({
                 method: 'put',
-                baseURL: 'http://localhost:8080/area/addViewer',
+                baseURL: process.env.NEXT_PUBLIC_API_URL + '/area/addViewer',
                 params: {
                     areaId:areaId,
                     userEmail:email,

@@ -4,7 +4,8 @@ const app = express()
 const cors = require('cors');
 require('dotenv').config({path:'.env.local'})
 //TODO specify the port number inside .env.local
-const port = process.env.SERVER_PORT
+const port = process.env.NEXT_PUBLIC_SERVER_PORT
+const hostname = process.env.EXPRESS_URL
 app.use(express.json())
 
 const deviceRouter = require('./routes/devices')
@@ -16,6 +17,11 @@ app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
 app.use("/gateways", gatewayRouter)
+
+app.use(cors({
+    origin: process.env.NEXT_PUBLIC_API_URL
+}));
+
 
 app.use(cors({
     origin: 'http://localhost:3000'
@@ -32,6 +38,6 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`)
+app.listen(port, hostname, () => {
+    console.log(`Server listening on ${hostname}:${port}`)
 })

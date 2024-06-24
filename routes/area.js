@@ -7,6 +7,10 @@ const User = require("../_models/users")
 const cors = require("cors");
 
 router.use(cors({
+    origin: process.env.NEXT_PUBLIC_API_URL + ':3000'
+}));
+
+router.use(cors({
     origin: 'http://localhost:3000'
 }));
 
