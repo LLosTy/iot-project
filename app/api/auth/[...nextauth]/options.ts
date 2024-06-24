@@ -98,10 +98,9 @@ export const options: NextAuthOptions = {
             return token
         },
         session({ session, token }) {
-  console.log(token);
-
+        console.log(token);
             if (session?.user && token.id) {
-                session.user.id = token.id;
+                // session.user.id = token.id;
             }
 
             return session;
