@@ -19,14 +19,8 @@ app.use('/area',areaRouter)
 app.use("/gateways", gatewayRouter)
 
 app.use(cors({
-    origin: process.env.NEXT_PUBLIC_API_URL
+    origin: process.env.NEXT_PUBLIC_API_URL + ":3000"
 }));
-
-
-app.use(cors({
-    origin: 'http://localhost:3000'
-}));
-
 
 const mongoose = require('mongoose')
 

@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {useSession} from "next-auth/react";
 import AreaItem from '/_components/AreaItem'
 import {Box, Container, Grid} from "@mui/material";

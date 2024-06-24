@@ -10,6 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import axios from "axios";
+import axiosInstance from "/_lib/axiosInstance";
 
 const style = {
     position: 'absolute',
@@ -31,26 +32,23 @@ const AddViewerModal= ({ open ,onClose, onAddViewer ,areaId}) => {
 
     const handleAddViewer = async () => {
         try {
-            console.log(areaId, email)
-            const response = axios({
-                method: 'put',
-                baseURL: process.env.NEXT_PUBLIC_API_URL + '/area/addViewer',
+            console.log(areaId, email);
+            axiosInstance.put('/area/addViewer', {}, {
                 params: {
-                    areaId:areaId,
-                    userEmail:email,
+                    areaId: areaId,
+                    userEmail: email,
                 },
-                responseType: 'json',
-            }).then(response => {
-                // handle success
-                //TODO toast
-                // console.log(response.data.newViewer);
-                onAddViewer(response.data.newViewer);
-
             })
+                .then(response => {
+                    // Handle success
+                    // TODO: toast
+                    // console.log(response.data.newViewer);
+                    onAddViewer(response.data.newViewer);
+                })
                 .catch(error => {
-                    //handle error
-                    //TODO toast
-                    console.error("Caught Error",error);
+                    // Handle error
+                    // TODO: toast
+                    console.error('Caught Error', error);
                 });
             // const newViewer = response;
             // onAddViewer(newViewer);

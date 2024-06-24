@@ -6,6 +6,7 @@ import axios from "axios"
 import Viewers from "/_components/Viewers"
 import { GetTempsByDevice } from "/_lib/actions/temps"
 import TempLineChart from '/_components/TempLineChart'
+import axiosInstance from "/_lib/axiosInstance";
 
 const AreaPage = () => {
     const [area, setArea] = useState([])
@@ -16,23 +17,20 @@ const AreaPage = () => {
     useEffect(() => {
         if (id && area.length === 0) {
             console.log(id)
-            axios({
-                method: 'get',
-                baseURL: process.env.NEXT_PUBLIC_API_URL + process.env.SERVER_PORT + '/area/getArea',
+            axiosInstance.get('/area/getArea', {
                 params: {
-                    areaId: id
+                    areaId: id,
                 },
-                responseType: 'json',
             })
                 .then(response => {
-                    // handle success
-                    console.log(response.data)
-                    setArea(response.data)
+                    // Handle success
+                    console.log(response.data);
+                    setArea(response.data);
                 })
                 .catch(error => {
-                    // handle error
-                    console.error("Caught Error", error)
-                })
+                    // Handle error
+                    console.error('Caught Error', error);
+                });
         }
     }, [id, area])
 
