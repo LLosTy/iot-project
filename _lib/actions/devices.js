@@ -1,5 +1,5 @@
 'use server'
-import axiosInstance from "../axiosInstance"
+import axiosInstance from "../../axiosInstance"
 
 
 export const GetUserDevices = async (userId) => {

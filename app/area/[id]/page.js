@@ -6,7 +6,7 @@ import axios from "axios"
 import Viewers from "/_components/Viewers"
 import { GetTempsByDevice } from "/_lib/actions/temps"
 import TempLineChart from '/_components/TempLineChart'
-import axiosInstance from "/_lib/axiosInstance";
+import axiosInstance from "/axiosInstance";
 
 const AreaPage = () => {
     const [area, setArea] = useState([])

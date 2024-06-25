@@ -7,7 +7,7 @@ import axios from "axios";
 import mongoose from "mongoose";
 
 import AddViewerModal from '/_components/AddViewerModal'
-import axiosInstance from "/_lib/axiosInstance";
+import axiosInstance from "/axiosInstance";
 const style = {
     py: 0,
     width: '100%',

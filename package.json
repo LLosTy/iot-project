@@ -8,7 +8,7 @@
     "start": "concurrently \"node app/api/index.js\" \"next start\"",
     "build": "next build",
     "lint": "next lint",
-    "server": "nodemon server.js"
+    "server": "nodemon app/api/index.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

@@ -96,6 +96,8 @@ router.get('/getArea', async(req,res) => {
 
 router.get('/getUserAreas', async(req,res) => {
     try{
+        console.log("Get User Areas")
+
         const userExists = await User.find({_id:req.query.userId})
         if(Object.keys(userExists).length === 0){
             res.status(409).json({message: 'This user ID does not exist'})

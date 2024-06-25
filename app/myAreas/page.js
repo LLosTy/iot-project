@@ -5,7 +5,7 @@ import {useSession} from "next-auth/react";
 import AreaItem from '/_components/AreaItem'
 import {Box, Container, Grid} from "@mui/material";
 import AddArea  from '/_components/AddAdrea'
-import axiosInstance from "/_lib/axiosInstance";
+import axiosInstance from "/axiosInstance";
 
 
 export default function MyAreasPage(){
@@ -26,6 +26,7 @@ export default function MyAreasPage(){
             })
                 .then(response => {
                     // Handle success
+                    console.log("MyAreasPageSuccess:", response.data)
                     console.log(response.data[0]);
                     setAreas(response.data);
                     setLoading(false);

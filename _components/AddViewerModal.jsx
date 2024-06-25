@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import axios from "axios";
-import axiosInstance from "/_lib/axiosInstance";
+import axiosInstance from "/axiosInstance";
 
 const style = {
     position: 'absolute',
