@@ -1,5 +1,7 @@
 import {LineChart} from "@mui/x-charts/LineChart";
 
+//TODO This component should only take in area ID and handle showing them etc
+
 
 function selectMaxSampleTemps(temperatures) {
     const maxSamples = 25;

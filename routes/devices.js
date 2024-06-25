@@ -18,6 +18,23 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/getAvailableDevices', async(req,res) => {
+    //req.query.userId
+    //res: deviceId[]
+    if(req.query.userId){
+        try{
+            const rawDevices = await Device.find({"userId": req.query.userId, "inUse":false}).lean()
+            const devices = rawDevices.map((device) => device.hardwareId)//Filtering out hardwareIds
+            res.json(devices)
+        }catch(error){
+            console.error('Error retrieving devices:', error);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }else {
+        return res.status(400).json({ error: "Please specify user ID in query params!" });
+    }
+})
+
 //TODO check if user on userId exists and is valid
 router.put('/create', async (req, res) => {
     const { hardwareId, userId } = req.body;

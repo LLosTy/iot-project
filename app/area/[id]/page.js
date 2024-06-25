@@ -1,50 +1,58 @@
-"use client"// app/area/[id]/page.js
+"use client" // app/area/[id]/page.js
 
-import { useParams } from 'next/navigation';
-import {useEffect, useState} from "react";
-import axios from "axios";
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from "react"
+import axios from "axios"
 import Viewers from "/_components/Viewers"
+import { GetTempsByDevice } from "/_lib/actions/temps"
+import TempLineChart from '/_components/TempLineChart'
+import axiosInstance from "/_lib/axiosInstance";
 
 const AreaPage = () => {
-    const [area, setArea] = useState([]);
+    const [area, setArea] = useState([])
+    const [temps, setTemps] = useState([])
+    const params = useParams()
+    const { id } = params
 
     useEffect(() => {
-
-
-        if (id && area.length === 0 ) {
-            console.log(area)
-            axios({
-                method: 'get',
-                baseURL: 'http://localhost:8080/area/getArea',
+        if (id && area.length === 0) {
+            console.log(id)
+            axiosInstance.get('/area/getArea', {
                 params: {
-                    areaId:id
+                    areaId: id,
                 },
-                responseType: 'json',
             })
                 .then(response => {
-                    // handle success
+                    // Handle success
                     console.log(response.data);
                     setArea(response.data);
                 })
                 .catch(error => {
-                    // handle error
-                    console.error("Caught Error",error);
+                    // Handle error
+                    console.error('Caught Error', error);
                 });
         }
-    });
-    const params = useParams();
-    const { id } = params;
-    console.log("Area ID in page.js:",id)
-    if(area.length !== 0 && id){
-        return (
-            <div>
-                <h1>{area.areaName}</h1>
-                {/*<h2>{area.viewers[0]}</h2>*/}
-                {/*<h2>Area info: {area}</h2>*/}
-                <Viewers viewers={area.viewers} areaId={id}></Viewers>
-            </div>
-        );
-    }
-};
+    }, [id, area])
 
-export default AreaPage;
+    const getTemps = async () => {
+        if (area.hardwareId) {
+            const rawTemps = await GetTempsByDevice(area.hardwareId)
+            setTemps(rawTemps)
+        }
+    }
+
+    if (area.length === 0 || !id) {
+        return <div>Loading...</div>
+    }
+
+    return (
+        <div>
+            <h1>{area.areaName}</h1>
+            {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} /> : <div>No temps</div>}
+            <Viewers viewers={area.viewers} areaId={id} />
+            <button onClick={getTemps}>Get Temps</button>
+        </div>
+    )
+}
+
+export default AreaPage

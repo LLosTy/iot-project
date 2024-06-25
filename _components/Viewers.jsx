@@ -1,11 +1,13 @@
 import {Divider, Grid, IconButton, List, ListItem, ListItemText} from "@mui/material";
 
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';import {useEffect, useState} from "react";
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import {useEffect, useState} from "react";
 import axios from "axios";
 import mongoose from "mongoose";
 
 import AddViewerModal from '/_components/AddViewerModal'
+import axiosInstance from "/_lib/axiosInstance";
 const style = {
     py: 0,
     width: '100%',
@@ -44,26 +46,23 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
     // console.log(areaId)
 
     const handleDelete = (viewer, areaId) => {
-        // console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId)
-        axios({
-            method: 'put',
-            baseURL: 'http://localhost:8080/area/removeViewer',
+        console.log("!!!areaId: ", areaId, "viewer: ", viewer, "viewerId: ",viewer.viewerId,"VIEWERS:", viewers)
+        axiosInstance.put('/area/removeViewer', {}, {
             params: {
-                areaId:areaId,
-                userId:viewer.viewerId
+                userId: viewer.viewerId,
+                areaId: areaId,
             },
-            responseType: 'json',
         })
             .then(response => {
-                // handle success
-                //TODO toast
+                // Handle success
+                // TODO: toast
                 console.log(response.data);
                 setViewers(viewers.filter(viewer => viewer.viewerId !== viewer.viewerId));
             })
             .catch(error => {
-                //handle error
-                //TODO toast
-                console.error("Caught Error",error);
+                // Handle error
+                // TODO: toast
+                console.error('Caught Error', error);
             });
         //TODO axios Delete call to BE
     };

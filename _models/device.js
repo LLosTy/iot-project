@@ -16,6 +16,10 @@ const deviceSchema = new mongoose.Schema({
     timestamp: {
         type: Date,
         default: new Date()
+    },
+    inUse: {
+        type: Boolean,
+        default:false
     }
 })
 const Device = mongoose.models.Device || mongoose.model("Device", deviceSchema, 'devices')

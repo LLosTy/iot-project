@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "dev-test": "concurrently \"npm run dev\" \"npm run server\"",
+    "start": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "next build",
-    "start": "next start",
     "lint": "next lint",
     "server": "nodemon server.js"
   },

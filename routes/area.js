@@ -7,9 +7,8 @@ const User = require("../_models/users")
 const cors = require("cors");
 
 router.use(cors({
-    origin: 'http://localhost:3000'
+    origin: process.env.NEXT_PUBLIC_API_URL + ":3000"
 }));
-
 
 //TODO maybe create a validation middleware for users, devices etc ..
 
@@ -20,6 +19,8 @@ router.get('/hello',async (req,res) =>{
 //TODO Create an Area route
 //TODO more error checking and optimization
 //TODO check if ownerID is real and also viewerID's
+
+//TODO set inUse for device
 router.put('/create',async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
@@ -61,6 +62,8 @@ router.put('/create',async(req,res) =>{
     }
 })
 //TODO Delete an Area route based on Area ID
+
+//TODO set inUse for device
 
 router.delete('/',async(req,res) => {
     try{
@@ -145,6 +148,7 @@ router.put('/addViewer', async(req,res) => {
     if(req.query.userEmail && req.query.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
+            console.log(req.query.userEmail,req.query.areaId)
             const exists = await User.findOne({email:req.query.userEmail})
             if(Object.keys(exists).length !== 0){
                 const result = await Area.findOneAndUpdate(
@@ -168,6 +172,8 @@ router.put('/addViewer', async(req,res) => {
             console.log(error)
             res.status(500).json({message: "An error occurred while adding user to viewers"})
         }
+    }else{
+        res.status(409).json({message: "Please specify a valid email and areaid"})
     }
 })
 
@@ -196,6 +202,8 @@ router.put('/removeViewer', async(req,res) => {
             console.log(error)
             res.status(500).json({message: "An error occurred while adding user to viewers"})
         }
+    }else{
+        res.status(409).json({message: "Please specify a valid email and areaid"})
     }
 })
 
