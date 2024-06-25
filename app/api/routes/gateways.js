@@ -1,9 +1,9 @@
 const express = require('express')
-const Gateway = require("../_models/gateway.js")
-const Temperature = require('../_models/temperature.js')
+const Gateway = require("../../../_models/gateway.js")
+const Temperature = require('../../../_models/temperature.js')
 const router = express.Router()
-const { generateGatewayToken } = require("../_lib/hash.js")
-const {authMiddleware, basicAuthMiddleware} = require("../authMiddleware.js")
+const { generateGatewayToken } = require("../../../_lib/hash.js")
+const {authMiddleware, basicAuthMiddleware} = require("../../../authMiddleware.js")
 
 
 //TODO: FOR ALL -> What if HardwareID doesn't exist anymore

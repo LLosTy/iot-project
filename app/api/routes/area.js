@@ -1,9 +1,9 @@
 
-const Area = require("../_models/area.js")
+const Area = require("../../../_models/area.js")
 const express = require("express");
 const router = express.Router()
-const Device = require("../_models/device")
-const User = require("../_models/users")
+const Device = require("../../../_models/device")
+const User = require("../../../_models/users")
 const cors = require("cors");
 
 router.use(cors({

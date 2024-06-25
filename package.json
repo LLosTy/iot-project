@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev-test": "concurrently \"npm run dev\" \"npm run server\"",
-    "start": "concurrently \"npm run dev\" \"npm run server\"",
+    "start": "concurrently \"node app/api/index.js\" \"next start\"",
     "build": "next build",
     "lint": "next lint",
     "server": "nodemon server.js"
