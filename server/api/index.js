@@ -25,8 +25,10 @@ app.use("/gateways", gatewayRouter)
 
 app.use(
     cors({
-        credentials: true,
         origin: process.env.EXPRESS_URL,
+        methods: 'GET,POST,PUT,DELETE',
+        allowedHeaders: 'Content-Type,Authorization',
+        credentials: true,
     })
 );
 app.set("trust proxy", 1);
