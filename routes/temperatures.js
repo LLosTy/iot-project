@@ -1,14 +1,13 @@
-const express = require('express')
-const Temperature = require("../_models/temperature.js")
-const router = express.Router()
+const express = require('express');
+const Temperature = require("../_models/temperature.js");
+const { verifyToken } = require("../authMiddleware.js");
+const router = express.Router();
 
-//TODO: ADD Gateway Token verification for as a wrapper for all calls (Middleware possible)
 // GET request handler for fetching temperature data
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
         const { dateFrom, dateTo, device } = req.query;
         let query = {};
-
 
         if (dateFrom && dateTo) {
             query.timestamp = {
@@ -32,5 +31,4 @@ router.get('/', async (req, res) => {
     }
 });
 
-
-module.exports = router
+module.exports = router;

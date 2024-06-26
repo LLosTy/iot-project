@@ -1,11 +1,12 @@
 const crypto = require('crypto');
-require('dotenv').config({path:'.env.local'})
+require('dotenv').config({ path: '.env.local' });
 const basicAuth = require('basic-auth');
-const Gateway = require("./_models/gateway"); // Adjust the path as necessary
-const { generateGatewayToken } = require("./_lib/hash")
+const Gateway = require("./_models/gateway");
+const { generateGatewayToken } = require("./_lib/hash");
+const jwt = require('jsonwebtoken');
+const User = require('./_models/users');
 
-
-// Middleware to check token
+// Middleware to check Gateway token
 const authMiddleware = async (req, res, next) => {
     const { authorization } = req.headers;
     const { _id } = req.body;
@@ -33,7 +34,7 @@ const authMiddleware = async (req, res, next) => {
 
         // Generate the expected token
         const expectedToken = generateGatewayToken(gateway.last_login, gateway.login_name);
-        
+
         // Compare tokens
         if (token !== expectedToken) {
             return res.status(403).json({ message: 'Invalid token' });
@@ -58,4 +59,28 @@ const basicAuthMiddleware = (req, res, next) => {
     next();
 };
 
-module.exports = {authMiddleware, basicAuthMiddleware};
+// JWT Token verification middleware
+const verifyToken = async (req, res, next) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(403).send({ message: 'No token provided!' });
+    }
+
+    try {
+        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET); // Extract the token and verify
+        req.userId = decoded.id;
+
+        const user = await User.findById(req.userId);
+        if (!user) {
+            return res.status(404).send({ message: 'User not found!' });
+        }
+
+        next();
+    } catch (error) {
+        console.error('Error in token verification middleware:', error);
+        return res.status(401).send({ message: 'Unauthorized!' });
+    }
+};
+
+module.exports = { authMiddleware, basicAuthMiddleware, verifyToken };
