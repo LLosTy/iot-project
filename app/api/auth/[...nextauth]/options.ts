@@ -95,6 +95,8 @@ export const options: NextAuthOptions = {
         },
         async jwt({ token, user }) {
             if (user) { // User is available during sign-in
+                console.log("JWT USER:::", user)
+                console.log("JWT TOKEN:::", token)
                 token.id = user.id
                 token.token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' }); // Sign the token with JWT_SECRET
 

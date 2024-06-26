@@ -1,10 +1,10 @@
 const express = require('express');
 const Temperature = require("../_models/temperature.js");
-const { verifyToken } = require("../authMiddleware.js");
+const { verifyUserToken } = require("../authMiddleware.js");
 const router = express.Router();
 
 // GET request handler for fetching temperature data
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', verifyUserToken, async (req, res) => {
     try {
         const { dateFrom, dateTo, device } = req.query;
         let query = {};

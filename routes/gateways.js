@@ -3,7 +3,7 @@ const Gateway = require("../_models/gateway.js")
 const Temperature = require('../_models/temperature.js')
 const router = express.Router()
 const { generateGatewayToken } = require("../_lib/hash.js")
-const {authMiddleware, basicAuthMiddleware} = require("../authMiddleware.js")
+const { verifyGatewayToken, basicGatewayAuthMiddleware } = require("../authMiddleware.js")
 
 
 //TODO: FOR ALL -> What if HardwareID doesn't exist anymore
@@ -44,7 +44,7 @@ router.put('/create', async (req, res) => {
     }
 });
 
-router.delete('/remove', authMiddleware, async (req, res) => {
+router.delete('/remove', verifyGatewayToken, async (req, res) => {
     const { _id, login_name } = req.body;
 
     if (_id || login_name) {
@@ -71,7 +71,7 @@ router.delete('/remove', authMiddleware, async (req, res) => {
     }
 });
 
-router.post('/get-comms-token', basicAuthMiddleware, async (req, res) => {
+router.post('/get-comms-token', basicGatewayAuthMiddleware, async (req, res) => {
     const { login_name, login_pwd } = req;
     console.log(req)
 
@@ -105,7 +105,7 @@ router.post('/get-comms-token', basicAuthMiddleware, async (req, res) => {
     }
 });
 
-router.patch('/update', authMiddleware, async (req, res) => {
+router.patch('/update', verifyGatewayToken, async (req, res) => {
     const { _id, hardwareIds, alias } = req.body;
 
     if (!_id) {
@@ -150,7 +150,7 @@ router.patch('/update', authMiddleware, async (req, res) => {
     }
 });
 
-router.post('/add-temperatures', authMiddleware, async (req, res) => {
+router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
     const { hardwareId, temperatures } = req.body;
 
     if (!hardwareId || !temperatures || !Array.isArray(temperatures)) {

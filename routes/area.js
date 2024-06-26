@@ -4,7 +4,7 @@ const router = express.Router()
 const Device = require("../_models/device")
 const User = require("../_models/users")
 const cors = require("cors");
-const { verifyToken } = require("../authMiddleware.js")
+const { verifyUserToken } = require("../authMiddleware.js")
 
 
 router.use(cors({
@@ -21,7 +21,7 @@ router.get('/hello',async (req,res) =>{
 //TODO Create an Area route
 //TODO more error checking and optimization
 //TODO check if ownerID is real and also viewerID's
-router.put('/create', verifyToken, async(req,res) =>{
+router.put('/create', verifyUserToken, async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
     if(areaName && hardwareId && ownerId){
@@ -63,7 +63,7 @@ router.put('/create', verifyToken, async(req,res) =>{
 })
 //TODO Delete an Area route based on Area ID
 
-router.delete('/', verifyToken, async(req,res) => {
+router.delete('/', verifyUserToken, async(req,res) => {
     try{
         const result = await Area.deleteOne({
             "_id":req.query.areaId,
@@ -76,7 +76,7 @@ router.delete('/', verifyToken, async(req,res) => {
     }
 })
 
-router.get('/getArea', verifyToken, async(req,res) => {
+router.get('/getArea', verifyUserToken, async(req,res) => {
     if(req.query.areaId){
         try{
             const result = await Area.findOne({"_id": req.query.areaId})
@@ -92,7 +92,7 @@ router.get('/getArea', verifyToken, async(req,res) => {
 
 //TODO Get Areas based on userID
 
-router.get('/getUserAreas', verifyToken, async(req,res) => {
+router.get('/getUserAreas', verifyUserToken, async(req,res) => {
     try{
         const userExists = await User.find({_id:req.query.userId})
         if(Object.keys(userExists).length === 0){
@@ -113,7 +113,7 @@ router.get('/getUserAreas', verifyToken, async(req,res) => {
 
 //TODO Update an Area name
 
-router.put('/updateAreaName', verifyToken, async (req, res) =>{
+router.put('/updateAreaName', verifyUserToken, async (req, res) =>{
     if(req.body.userId && req.body.areaName && req.body.areaId){
         try{
             const area = await Area.findOneAndUpdate({
@@ -142,7 +142,7 @@ router.put('/updateAreaName', verifyToken, async (req, res) =>{
 //figure out how to make it one endpoint instead of two, maybe send it in query params like push / pull
 //But if you do that, you NEED to validate the sent query params cause you dont want an outsider to delete the whole thing or something
 
-router.put('/addViewer', verifyToken, async(req,res) => {
+router.put('/addViewer', verifyUserToken, async(req,res) => {
     if(req.query.userEmail && req.query.areaId){
         try{
             //TODO validate if the user adding a viewer is an owner
@@ -173,7 +173,7 @@ router.put('/addViewer', verifyToken, async(req,res) => {
 })
 
 //TODO Remove a viewer route
-router.put('/removeViewer', verifyToken, async(req,res) => {
+router.put('/removeViewer', verifyUserToken, async(req,res) => {
     if(req.query.userId && req.query.areaId){
         try{
             //TODO validate if the user removing a viewer is an owner
@@ -200,7 +200,7 @@ router.put('/removeViewer', verifyToken, async(req,res) => {
     }
 })
 
-router.put('/setThreshold', verifyToken, async(req,res) => {
+router.put('/setThreshold', verifyUserToken, async(req,res) => {
     if (req.body.areaId && req.body.userId && req.body.newMin){
         try{
             const area = await Area.findOneAndUpdate({

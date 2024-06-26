@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./_models/users');
 
 // Middleware to check Gateway token
-const authMiddleware = async (req, res, next) => {
+const verifyGatewayToken = async (req, res, next) => {
     const { authorization } = req.headers;
     const { _id } = req.body;
 
@@ -49,7 +49,7 @@ const authMiddleware = async (req, res, next) => {
 };
 
 // Basic Authentication middleware
-const basicAuthMiddleware = (req, res, next) => {
+const basicGatewayAuthMiddleware = (req, res, next) => {
     const user = basicAuth(req);
     if (!user || !user.name || !user.pass) {
         return res.status(401).json({ message: 'Missing or invalid authentication credentials' });
@@ -60,16 +60,22 @@ const basicAuthMiddleware = (req, res, next) => {
 };
 
 // JWT Token verification middleware
-const verifyToken = async (req, res, next) => {
-    const token = req.headers['authorization'];
+const verifyUserToken = async (req, res, next) => {
+    const { authorization } = req.headers;
 
+    if (!authorization) {
+        return res.status(401).json({ message: 'Authorization token missing' });
+    }
+
+    const token = authorization.split(' ')[1];
     if (!token) {
         return res.status(403).send({ message: 'No token provided!' });
     }
 
     try {
-        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET); // Extract the token and verify
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Extract the token and verify
         req.userId = decoded.id;
+        console.log("VERIFY TOKEN USER ID:::", req.userId)
 
         const user = await User.findById(req.userId);
         if (!user) {
@@ -83,4 +89,4 @@ const verifyToken = async (req, res, next) => {
     }
 };
 
-module.exports = { authMiddleware, basicAuthMiddleware, verifyToken };
+module.exports = { verifyGatewayToken, basicGatewayAuthMiddleware, verifyUserToken };
