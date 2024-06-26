@@ -22,6 +22,16 @@ app.use(cors({
     origin: process.env.NEXT_PUBLIC_API_URL
 }));
 
+
+app.use(
+    cors({
+        credentials: true,
+        origin: process.env.NEXT_PUBLIC_API_URL,
+    })
+);
+app.set("trust proxy", 1);
+
+
 const mongoose = require('mongoose')
 
 mongoose.connect(process.env.DATABASE_URL).then(r => console.log('Connected to Database'))
