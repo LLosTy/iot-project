@@ -18,15 +18,15 @@ app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
 app.use("/gateways", gatewayRouter)
 
-app.use(cors({
-    origin: process.env.NEXT_PUBLIC_API_URL
-}));
+// app.use(cors({
+//     origin: process.env.NEXT_PUBLIC_API_URL
+// }));
 
 
 app.use(
     cors({
         credentials: true,
-        origin: process.env.NEXT_PUBLIC_API_URL,
+        origin: process.env.EXPRESS_URL,
     })
 );
 app.set("trust proxy", 1);
