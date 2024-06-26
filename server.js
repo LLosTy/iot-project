@@ -11,15 +11,17 @@ const deviceRouter = require('./routes/devices')
 const tempsRouter = require('./routes/temperatures')
 const areaRouter = require("./routes/area")
 const gatewayRouter = require("./routes/gateways")
+const userRouter = require("./routes/users")
+
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
 app.use('/area',areaRouter)
 app.use("/gateways", gatewayRouter)
-
-app.use(cors({
-    origin: 'http://localhost:3000'
-}));
+app.use("/users", userRouter)
 
 
 const mongoose = require('mongoose')

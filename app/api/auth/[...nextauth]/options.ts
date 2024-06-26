@@ -43,7 +43,7 @@ export const options: NextAuthOptions = {
                         username: credentials.username
                     })
 
-                    if (db_user && bcrypt.compareSync(credentials.password, db_user.password)) {
+                    if (db_user && credentials.password === db_user.password) {
                         return db_user
                     }
                 }
@@ -94,9 +94,9 @@ export const options: NextAuthOptions = {
             return true;
         },
         async jwt({ token, user }) {
+            console.log("JWT USER:::", user)
+            console.log("JWT TOKEN:::", token)
             if (user) { // User is available during sign-in
-                console.log("JWT USER:::", user)
-                console.log("JWT TOKEN:::", token)
                 token.id = user.id
                 token.token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' }); // Sign the token with JWT_SECRET
 
