@@ -32,14 +32,15 @@ const AreaPage = () => {
                     console.error('Caught Error', error);
                 });
         }
-    }, [id, area])
-
-    const getTemps = async () => {
         if (area.hardwareId) {
-            const rawTemps = await GetTempsByDevice(area.hardwareId)
-            setTemps(rawTemps)
+            // GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
+            console.log("Setting temps")
+            axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
+                response => {setTemps(response.data.temps)}
+            )
+            // setTemps(rawTemps)
         }
-    }
+    }, [id, area])
 
     if (area.length === 0 || !id) {
         return <div>Loading...</div>
@@ -50,7 +51,6 @@ const AreaPage = () => {
             <h1>{area.areaName}</h1>
             {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} /> : <div>No temps</div>}
             <Viewers viewers={area.viewers} areaId={id} />
-            <button onClick={getTemps}>Get Temps</button>
         </div>
     )
 }
