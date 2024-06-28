@@ -34,6 +34,7 @@ const AreaPage = () => {
         }
         if (area.hardwareId) {
             GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
+            console.log("Setting temps")
             // setTemps(rawTemps)
         }
     }, [id, area])
