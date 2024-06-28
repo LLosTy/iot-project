@@ -5,6 +5,7 @@ const router = express.Router()
 const Device = require("../../../_models/device")
 const User = require("../../../_models/users")
 const cors = require("cors");
+const { verifyUserToken } = require("../../../authMiddleware.js")
 
 router.use(cors({
     origin: process.env.NEXT_PUBLIC_API_URL + ":3000"
@@ -21,7 +22,7 @@ router.get('/hello',async (req,res) =>{
 //TODO check if ownerID is real and also viewerID's
 
 //TODO set inUse for device
-router.put('/create',async(req,res) =>{
+router.put('/create', verifyUserToken, async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
     if(areaName && hardwareId && ownerId){
@@ -65,7 +66,7 @@ router.put('/create',async(req,res) =>{
 
 //TODO set inUse for device
 
-router.delete('/',async(req,res) => {
+router.delete('/', verifyUserToken, async(req,res) => {
     try{
         const result = await Area.deleteOne({
             "_id":req.query.areaId,
@@ -78,7 +79,7 @@ router.delete('/',async(req,res) => {
     }
 })
 
-router.get('/getArea', async(req,res) => {
+router.get('/getArea', verifyUserToken, async(req,res) => {
     if(req.query.areaId){
         try{
             const result = await Area.findOne({"_id": req.query.areaId})
@@ -94,7 +95,7 @@ router.get('/getArea', async(req,res) => {
 
 //TODO Get Areas based on userID
 
-router.get('/getUserAreas', async(req,res) => {
+router.get('/getUserAreas', verifyUserToken, async(req,res) => {
     try{
         console.log("Get User Areas")
 

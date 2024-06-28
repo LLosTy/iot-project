@@ -1,10 +1,11 @@
 const express = require('express')
 const Device = require("../../../_models/device.js")
 const router = express.Router()
+const { verifyUserToken } = require("../../../authMiddleware.js")
 
 
 //Get Devices under a UserId
-router.get('/', async (req, res) => {
+router.get('/', verifyUserToken, async (req, res) => {
     if (req.query.userId) {
         try {
             const devices = await Device.find({ "userId": req.query.userId }).lean(); // Retrieve all devices
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/getAvailableDevices', async(req,res) => {
+router.get('/getAvailableDevices', verifyUserToken, async(req,res) => {
     //req.query.userId
     //res: deviceId[]
     if(req.query.userId){
@@ -36,7 +37,7 @@ router.get('/getAvailableDevices', async(req,res) => {
 })
 
 //TODO check if user on userId exists and is valid
-router.put('/create', async (req, res) => {
+router.put('/create', verifyUserToken, async (req, res) => {
     const { hardwareId, userId } = req.body;
     if(hardwareId && userId){
         try{
@@ -60,7 +61,7 @@ router.put('/create', async (req, res) => {
 
 });
 
-router.put('/update', async (req, res) => {
+router.put('/update', verifyUserToken, async (req, res) => {
     //Had to validate length here, otherwise it would throw a different error if i validated in mongoose
     if (req.body.hardwareId.length === 16) {
         try {
@@ -89,7 +90,7 @@ router.put('/update', async (req, res) => {
     }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/', verifyUserToken.apply, async (req, res) => {
     if(req.query.hardwareId){
         try{
             const result = await Device.deleteOne({"hardwareId":req.query.hardwareId})
