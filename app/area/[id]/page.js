@@ -32,13 +32,14 @@ const AreaPage = () => {
                     console.error('Caught Error', error);
                 });
         }
+        if (area.hardwareId) {
+            GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
+            // setTemps(rawTemps)
+        }
     }, [id, area])
 
     const getTemps = async () => {
-        if (area.hardwareId) {
-            const rawTemps = await GetTempsByDevice(area.hardwareId)
-            setTemps(rawTemps)
-        }
+
     }
 
     if (area.length === 0 || !id) {
