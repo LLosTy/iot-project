@@ -5,8 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import Users from '../../../../_models/users'
 import connectMongoDB from '../../../../_lib/mongodb';
 import bcrypt from 'bcryptjs';
-import { ConnectingAirportsOutlined } from '@mui/icons-material'
-
+import jwt from 'jsonwebtoken'
 
 export const options: NextAuthOptions = {
     providers: [
@@ -43,7 +42,7 @@ export const options: NextAuthOptions = {
                         username: credentials.username
                     })
 
-                    if (db_user && bcrypt.compareSync(credentials.password, db_user.password)) {
+                    if (db_user && credentials.password === db_user.password) {
                         return db_user
                     }
                 }
@@ -68,6 +67,7 @@ export const options: NextAuthOptions = {
                 displayName: name,
                 githubId: "",
                 googleId: "",
+                token: account? account.id_token : "",
             }
 
             // Determine fields to update based on provider
@@ -91,17 +91,25 @@ export const options: NextAuthOptions = {
             console.log(`${user.name} logged to the account`)
             return true;
         },
-        jwt({ token, user }) {
+        async jwt({ token, user }) {
             if (user) { // User is available during sign-in
                 token.id = user.id
+                token.token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' }); // Sign the token with JWT_SECRET
+
+                await connectMongoDB();
+                await Users.findOneAndUpdate(
+                    { _id: user.id },
+                    { token: token.token }
+                );
             }
             return token
         },
         session({ session, token }) {
         // console.log("token:",token);
-            if (session?.user && token.id) {
+            if (session?.user && token) {
                 // @ts-ignore
                 session.user.id = token.id;
+                session.user.token = token.token;
             }
 
             return session;
