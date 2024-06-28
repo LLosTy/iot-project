@@ -33,8 +33,12 @@ const AreaPage = () => {
                 });
         }
         if (area.hardwareId) {
-            GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
+            // GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
             console.log("Setting temps")
+            axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
+                response => {response.data.temps.map((temp) => {console.log(temp.payload.temp)})
+                }
+            )
             // setTemps(rawTemps)
         }
     }, [id, area])
