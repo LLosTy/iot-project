@@ -36,8 +36,7 @@ const AreaPage = () => {
             // GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
             console.log("Setting temps")
             axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
-                response => {response.data.temps.map((temp) => {console.log(temp.payload.temp)})
-                }
+                response => {setTemps(response.data.temps)}
             )
             // setTemps(rawTemps)
         }
