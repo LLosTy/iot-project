@@ -42,10 +42,6 @@ const AreaPage = () => {
         }
     }, [id, area])
 
-    const getTemps = async () => {
-
-    }
-
     if (area.length === 0 || !id) {
         return <div>Loading...</div>
     }
@@ -55,7 +51,6 @@ const AreaPage = () => {
             <h1>{area.areaName}</h1>
             {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} /> : <div>No temps</div>}
             <Viewers viewers={area.viewers} areaId={id} />
-            <button onClick={getTemps}>Get Temps</button>
         </div>
     )
 }
