@@ -38,6 +38,32 @@ const AreaPage = () => {
     const isOwner = session?.user?.id === area?.ownerId;
 
     useEffect(() => {
+// <<<<<<< TempsByInterval
+//         if (id && area.length === 0) {
+//             console.log(id)
+//             axiosInstance.get('/area/getArea', {
+//                 params: {
+//                     areaId: id,
+//                 },
+//             })
+//                 .then(response => {
+//                     // Handle success
+//                     console.log(response.data);
+//                     setArea(response.data);
+//                 })
+//                 .catch(error => {
+//                     // Handle error
+//                     console.error('Caught Error', error);
+//                 });
+//         }
+//         if (area.hardwareId) {
+//             // GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
+//             // console.log("Setting temps")
+//             // axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
+//             //     response => {setTemps(response.data.temps)}
+//             // )
+//             // setTemps(rawTemps)
+// =======
 
       if (id && area.length === 0 && session && !isLoading) {
         console.log(id);
@@ -85,30 +111,10 @@ const AreaPage = () => {
     return (
         <div>
             <h1>{area.areaName}</h1>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                label="Date From"
-                value={dateFrom}
-                onChange={(newValue) => setDateFrom(newValue)}
-                renderInput={(params) => <TextField {...params} />}
-                />
-                <DatePicker
-                label="Date To"
-                value={dateTo}
-                onChange={(newValue) => setDateTo(newValue)}
-                renderInput={(params) => <TextField {...params} />}
-                />
-            </LocalizationProvider>
+            {/*<TempLineChart rawTemperatures={temps} deviceId={area.hardwareId} />*/}
+            <TempLineChart deviceId={area.hardwareId} />
 
             <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ flexGrow: 1 }}>
-                {temps.length !== 0 ? (
-                    <TempLineChart rawTemperatures={temps} />
-                ) : (
-                    <div>No temps</div>
-                )}
-                </div>
                 <div style={{ marginLeft: 20, display: 'flex', flexDirection: 'column' }}>
                 <Button
                     variant="contained"
@@ -173,6 +179,7 @@ const AreaPage = () => {
                 />
                 </div>
             </div>
+
 
             <Viewers viewers={area.viewers} areaId={id} />
 
