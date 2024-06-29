@@ -38,6 +38,7 @@ const AreaPage = () => {
     const isOwner = session?.user?.id === area?.ownerId;
 
     useEffect(() => {
+
       if (id && area.length === 0 && session && !isLoading) {
         console.log(id);
         axiosInstance.get('/area/getArea', {
@@ -174,6 +175,7 @@ const AreaPage = () => {
             </div>
 
             <Viewers viewers={area.viewers} areaId={id} />
+
             <Button variant="contained" color="primary" onClick={getTemps}>
                 Get Temps
             </Button>
