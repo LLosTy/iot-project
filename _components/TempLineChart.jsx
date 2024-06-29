@@ -63,11 +63,8 @@ const TempLineChart = ({
     }
 
     useEffect(() => {
-        console.log("Setting temps")
-        axiosInstance.get(`/temps?device=${deviceId}`).then(
-            response => {setRawTemps(response.data.temps)}
-        )
-    }, [deviceId]);
+        handleSearch()
+    }, []);
 
     function handleSearch(){
         axiosInstance.get(`/temps?dateFrom=${date}&device=${deviceId}`)

@@ -85,20 +85,20 @@ const AreaPage = () => {
       }
     }, [session, id, area]);
 
-    const getTemps = async () => {
-      if (area && area.hardwareId && session && !isLoading) {
-        try {
-          const rawTemps = await GetTempsByDevice(session, area.hardwareId);
-          setTemps(rawTemps);
-        } catch (error) {
-          console.error('Failed to fetch temperatures', error);
-        }
-      }
-    };
+    // const getTemps = async () => {
+    //   if (area && area.hardwareId && session && !isLoading) {
+    //     try {
+    //       const rawTemps = await GetTempsByDevice(session, area.hardwareId);
+    //       setTemps(rawTemps);
+    //     } catch (error) {
+    //       console.error('Failed to fetch temperatures', error);
+    //     }
+    //   }
+    // };
   
-    useEffect(() => {
-      getTemps();
-    }, [area, session, isLoading]);
+    // useEffect(() => {
+    //   getTemps();
+    // }, [area, session, isLoading]);
 
     const toggleDrawer = (open) => () => {
         setDrawerOpen(open);
@@ -183,9 +183,9 @@ const AreaPage = () => {
 
             <Viewers viewers={area.viewers} areaId={id} />
 
-            <Button variant="contained" color="primary" onClick={getTemps}>
-                Get Temps
-            </Button>
+            {/*<Button variant="contained" color="primary" onClick={getTemps}>*/}
+            {/*    Get Temps*/}
+            {/*</Button>*/}
 
             <ThresholdModal
                 area={area}

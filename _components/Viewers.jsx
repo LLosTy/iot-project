@@ -57,7 +57,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
                 // Handle success
                 // TODO: toast
                 console.log(response.data);
-                setViewers(viewers.filter(viewer => viewer.viewerId !== viewer.viewerId));
+                setViewers(viewers.filter(iterator => iterator.viewerId !== viewer.viewerId));
             })
             .catch(error => {
                 // Handle error
