@@ -2,9 +2,13 @@
 import axiosInstance from "../../axiosInstance"
 
 
-export const GetUserDevices = async (userId) => {
+export const GetUserDevices = async (session, userId) => {
     try {
-        const res = await axiosInstance.get(`/devices?userId=${userId}`); // Change user to userId
+        const res = await axiosInstance.get(`/devices/?userId=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        }); // Change user to userId
         console.log("Called Axios to GET devices");
         return res.data;
     } catch (err) {
@@ -13,9 +17,13 @@ export const GetUserDevices = async (userId) => {
     }
 }
 
-export const GetDevice = async (deviceId) => {
+export const GetDevice = async (session, deviceId) => {
     try {
-        const res = await axiosInstance.get(`/devices?device=${deviceId}`);
+        const res = await axiosInstance.get(`/devices/?device=${deviceId}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         console.log("Called Axios to GET device");
         return res.data.devices;
     } catch (err) {
@@ -24,9 +32,13 @@ export const GetDevice = async (deviceId) => {
     }
 }
 
-export const CreateDevice = async (deviceData) => {
+export const CreateDevice = async (session, deviceData) => {
     try {
-        const res = await axiosInstance.put('/devices', deviceData);
+        const res = await axiosInstance.put('/devices', deviceData, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         console.log("Device created:", res.data.devices);
     } catch (err) {
         console.log(err);
@@ -34,9 +46,13 @@ export const CreateDevice = async (deviceData) => {
     }
 }
 
-export const UpdateDevice = async (deviceData) => {
+export const UpdateDevice = async (session, deviceData) => {
     try {
-        const res = await axiosInstance.put('/devices', deviceData);
+        const res = await axiosInstance.put('/devices', deviceData, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         return res.data.devices;
     } catch (err) {
         console.log(err);
@@ -44,9 +60,13 @@ export const UpdateDevice = async (deviceData) => {
     }
 }
 
-export const DeleteDevice = async (deviceId) => {
+export const DeleteDevice = async (session, deviceId) => {
     try {
-        const res = await axiosInstance.delete(`/devices?device=${deviceId}`);
+        const res = await axiosInstance.delete(`/devices?device=${deviceId}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         return res.data.devices;
     } catch (err) {
         console.log(err);

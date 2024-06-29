@@ -151,39 +151,56 @@ router.patch('/update', verifyGatewayToken, async (req, res) => {
 });
 
 router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
-    const { hardwareId, temperatures } = req.body;
+    const { _id, hardwareIds, temperatures } = req.body;
 
-    if (!hardwareId || !temperatures || !Array.isArray(temperatures)) {
-        return res.status(400).json({ error: "Please specify the hardwareId and an array of temperatures!" });
+    if (!hardwareIds || !Array.isArray(hardwareIds) || !temperatures || typeof temperatures !== 'object') {
+        return res.status(400).json({ error: "Please specify an array of hardwareIds and a valid temperatures object!" });
     }
 
     try {
-        // Find the gateway by hardwareId
-        const gateway = await Gateway.findOne({ hardwareIds: hardwareId });
+        // Find the gateway by _id
+        const gateway = await Gateway.findOne({ _id });
         if (!gateway) {
             return res.status(404).json({ message: 'Gateway not found' });
         }
 
-        // Verify the hardwareId is part of the gateway's hardwareIds
-        if (!gateway.hardwareIds.includes(hardwareId)) {
-            return res.status(403).json({ message: 'Hardware ID not associated with this gateway' });
+        // Verify the hardwareIds are part of the gateway's hardwareIds
+        const invalidIds = hardwareIds.filter(id => !gateway.hardwareIds.includes(id));
+        if (invalidIds.length > 0) {
+            return res.status(403).json({ message: `Hardware IDs not associated with this gateway: ${invalidIds.join(', ')}` });
         }
 
         // Update the last_received_comms field
         gateway.last_received_comms.push(new Date());
+
+        // Create a map to store the sum of temperatures and count for each client_id
+        const averageTemperatureRecords = [];
+        for (const client_id in temperatures) {
+            const { sum, count } = temperatures[client_id];
+            const averageTemp = sum / count;
+
+            averageTemperatureRecords.push({
+                payload: {
+                    client_id: client_id,
+                    temp: averageTemp.toFixed(2)
+                },
+                timestamp: new Date() // You can use a different timestamp if needed
+            });
+
+            // Add client_id to hardwareIds if not already present
+            if (!gateway.hardwareIds.includes(client_id)) {
+                gateway.hardwareIds.push(client_id);
+            }
+        }
+
         await gateway.save();
+        const result = await Temperature.insertMany(averageTemperatureRecords);
 
-        // Add new temperature records
-        const temperatureRecords = temperatures.map(temp => ({
-            ...temp,
-            hardwareId, // Ensure hardwareId is included in each temperature record
-            timestamp: new Date(temp.timestamp) // Ensure the timestamp is properly formatted
-        }));
-
-        const result = await Temperature.insertMany(temperatureRecords);
-
-        // Respond with the created temperature records
-        res.json({ message: 'Temperatures added successfully', temperatures: result });
+        // Respond with the created average temperature records
+        res.json({
+            message: 'Average temperatures added successfully',
+            temperatures: result
+        });
 
     } catch (error) {
         console.error('Error while adding temperatures:', error);

@@ -12,6 +12,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useSession } from "next-auth/react";
 
 
 export default function TempsPage(){
@@ -19,8 +20,10 @@ export default function TempsPage(){
     const [temps2, setTemps2] = useState([])
     const [dateFrom, setDateFrom] = useState(dayjs())
     const [dateTo, setDateTo] = useState(dayjs())
+    const { data: session, status } = useSession()
     let testArr = []
     let temps2Array = []
+    const isLoading = status === "loading";
 
     
     if (temps !== undefined){
@@ -40,23 +43,25 @@ export default function TempsPage(){
 
     useEffect(() => {
         const fetchTemps = async () => {
-            const fetchedTemps = await GetTemps();
-            setTemps(fetchedTemps);
+            if (!isLoading && session){
+                const fetchedTemps = await GetTemps(session);
+                setTemps(fetchedTemps);
+            }
         }
-
         fetchTemps();
-    }, [])
+    }, [session, isLoading])
 
     useEffect(() => {
         const fetchTemps = async () => {
-            const formmatedDateFrom = dateFrom.format("YYYY-MM-DD")
-            const formattedDateTo = dateTo.format("YYYY-MM-DD")
-            const fetchedTemps2 = await GetTempsByDate(formmatedDateFrom, formattedDateTo);
-            setTemps2(fetchedTemps2);
+            if (!isLoading && session){
+                const formmatedDateFrom = dateFrom.format("YYYY-MM-DD")
+                const formattedDateTo = dateTo.format("YYYY-MM-DD")
+                const fetchedTemps2 = await GetTempsByDate(session, formmatedDateFrom, formattedDateTo);
+                setTemps2(fetchedTemps2);
+            }
         }
-
         fetchTemps();
-    }, [dateFrom, dateTo])
+    }, [session, isLoading, dateFrom, dateTo])
 
     return (
         <div>
@@ -79,11 +84,11 @@ export default function TempsPage(){
                 </DemoContainer>
             </LocalizationProvider>
 
-            {(temps2.length > 0)?
+            {(temps2?.length > 0)?
             <TempLineChart rawTemperatures={temps2}/>            
             : null}
 
-            {temps.length > 0? 
+            {temps?.length > 0? 
             <TempLineChart rawTemperatures={temps}/>
             :null}
             

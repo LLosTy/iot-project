@@ -2,9 +2,13 @@
 import axiosInstance from "../../axiosInstance"
 
 
-export const GetTemps = async () => {
+export const GetTemps = async (session) => {
     try {
-        const res = await axiosInstance.get('/temps');
+        const res = await axiosInstance.get('/temps', {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         console.log("Called Axios to GET All temperatures");
         return res.data.temps;
     } catch (err) {
@@ -13,9 +17,13 @@ export const GetTemps = async () => {
     }
 }
 
-export const GetTempsByDate = async (dateFrom, dateTo) => {
+export const GetTempsByDate = async (session, dateFrom, dateTo) => {
     try {
-        const res = await axiosInstance.get(`/temps?dateFrom=${dateFrom}&dateTo=${dateTo}`);
+        const res = await axiosInstance.get(`/temps?dateFrom=${dateFrom}&dateTo=${dateTo}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         console.log("Called Axios to GET temperatures From and To specified date");
         return res.data.temps;
     } catch (err) {
@@ -24,9 +32,13 @@ export const GetTempsByDate = async (dateFrom, dateTo) => {
     }
 }
 
-export const GetTempsByDevice = async (deviceId) => {
+export const GetTempsByDevice = async (session, deviceId) => {
     try {
-        const res = await axiosInstance.get(`/temps?device=${deviceId}`);
+        const res = await axiosInstance.get(`/temps?device=${deviceId}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`,
+            },
+        });
         console.log("Called Axios to GET temperatures by deviceId");
         return res.data.temps;
     } catch (err) {

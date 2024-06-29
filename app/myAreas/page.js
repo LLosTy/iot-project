@@ -19,6 +19,9 @@ export default function MyAreasPage(){
         if (session && loading === true) {
             console.log(areas)
             axiosInstance.get('/area/getUserAreas', {
+                headers: {
+                    Authorization: `Bearer ${session.user.token}`,
+                },
                 params: {
                     userId: session.user.id,
                 },

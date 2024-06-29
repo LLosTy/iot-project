@@ -27,5 +27,4 @@ if(process.env.NEXT_PUBLIC_ENV === "DEV"){
     });
 }
 
-
 export default axiosInstance;
