@@ -16,7 +16,7 @@ const userRouter = require("./routes/users")
 
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
-app.use('/area',areaRouter)
+app.use('/areas',areaRouter)
 app.use("/gateways", gatewayRouter)
 app.use("/users", userRouter)
 

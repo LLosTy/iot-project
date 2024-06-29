@@ -8,9 +8,9 @@ const cors = require("cors");
 const { verifyUserToken } = require("../../../authMiddleware.js")
 
 
-router.use(cors({
+/*router.use(cors({
     origin: process.env.NEXT_PUBLIC_API_URL + ":3000"
-}));
+}));*/
 
 //TODO maybe create a validation middleware for users, devices etc ..
 
@@ -23,7 +23,7 @@ router.get('/hello',async (req,res) =>{
 //TODO check if ownerID is real and also viewerID's
 
 //TODO set inUse for device
-router.put('/create', verifyUserToken, async(req,res) =>{
+router.post('/create', verifyUserToken, async(req,res) =>{
     console.log(req.body)
     const {areaName, hardwareId, ownerId, viewers, notifications} = req.body
     if(areaName && hardwareId && ownerId){
@@ -211,8 +211,8 @@ router.put('/removeViewer', verifyUserToken, async(req,res) => {
     }
 })
 
-router.put('/setThreshold', verifyUserToken, async(req,res) => {
-    if (req.body.areaId && req.body.userId && req.body.newMin){
+router.patch('/setThreshold', verifyUserToken, async(req,res) => {
+    if (req.body.areaId && req.body.userId && (req.body.newMin || req.body,newMax)){
         try{
             const area = await Area.findOneAndUpdate({
                 _id: req.body.areaId,
@@ -237,5 +237,26 @@ router.put('/setThreshold', verifyUserToken, async(req,res) => {
 //TODO Set up websocket to fetch new data from temps based on hardwareID
 
 //TODO Set up acknowledge logic
+router.patch('/ackowledge', verifyUserToken, async(req, res) => {
+    if (req.body.areaId && req.body.userId && req.body.acknowledged){
+        try{
+            const area = await Area.findOneAndUpdate({
+                _id: req.body.areaId,
+                ownerId: req.body.userId,
+            }, { acknowledged: req.body.acknowledged }, {new:true, runValidators: true })
+
+            if(area){
+                res.status(200).json({message: area})
+            }else{
+                res.status(409).json({message: "Could not find area"})
+            }
+        }catch(error){
+            console.log(error.message)
+            res.status(500).json({message:"Internal server error: " + error.message})
+        }
+    }else{
+        res.status(409).json({message: "Please specify areaId, userId and acknowledged"})
+    }
+})
 
 module.exports = router
