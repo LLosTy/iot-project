@@ -2,7 +2,8 @@ import axios from 'axios';
 require('dotenv').config();
 
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: "http://localhost:8080/" || process.env.NEXT_PUBLIC_API_URL+`:${process.env.PORT}/`
+    ,
     headers: {
         'Content-Type': 'application/json',
         withCredentials: true,

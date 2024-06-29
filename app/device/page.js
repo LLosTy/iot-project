@@ -10,14 +10,15 @@ import { GetUserDevices } from '/_lib/actions/devices'
 //TODO fetch data based on the currently signed in user
 
 export default function DevicePage(){
-    const {data: session} = useSession();
+    const {data: session, status} = useSession();
     const [devices, setDevices] = useState([]);
+    const isLoading = status === "loading";
 
     useEffect(() => {
         const fetchDevices = async () => {
-            if (session) {
+            if (!isLoading && session) {
                 try {
-                    const userDevices = await GetUserDevices(session.user.id);
+                    const userDevices = await GetUserDevices(session, session.user.id);
                     setDevices(userDevices);
                     console.log("User Devices:", userDevices);
                 } catch (error) {
@@ -27,9 +28,10 @@ export default function DevicePage(){
         };
 
         fetchDevices();
-    }, [session])
+    }, [session, isLoading])
 
     console.log(devices)
+    console.log(devices.length)
 
     return(
         <div>
@@ -40,7 +42,7 @@ export default function DevicePage(){
                                     Room={"Master Bedroom"}
                                     LatestTemp={25}
                         />
-                        {(devices.length > 0) ? (
+                        {(Array.isArray(devices) && devices.length > 0) ? (
                             console.log(devices),
                             devices.map((device) => {
                                 <DeviceCard

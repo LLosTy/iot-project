@@ -105,7 +105,6 @@ export const options: NextAuthOptions = {
             return token
         },
         session({ session, token }) {
-        // console.log("token:",token);
             if (session?.user && token) {
                 // @ts-ignore
                 session.user.id = token.id;
