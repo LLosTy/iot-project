@@ -6,6 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import SearchIcon from '@mui/icons-material/Search';
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import axiosInstance from "/axiosInstance";
 
 //TODO This component should only take in area ID and handle showing them etc
@@ -36,22 +37,24 @@ const getIndex = (temperatures) => {
 
 
 const TempLineChart = ({
-    rawTemperatures,deviceId
+    deviceId
 }) => {
-    const temperatures = selectMaxSampleTemps(rawTemperatures)
+    const [rawTemperatures, setRawTemps] = useState([])
+    const [temperatures, setTemperatures] = useState([])
     const maxTemp = Math.max(temperatures)
-    const temperaturesIndex = getIndex(temperatures)
+    const [tempsTimestamp,setTempsTimestamp] = useState([])
 
     const [interval, setInterval] = useState('day')
-    const [dateFrom, setDateFrom] = useState(dayjs())
+    dayjs.extend(utc);
+    const [date, setDate] = useState(dayjs())
     const [dateTo, setDateTo] = useState(dayjs())
 
     const handleChange = (event) => {
         setInterval(event.target.value);
     };
 
-    function handleDateFromChange(value) {
-        setDateFrom(value)
+    function handleDateChange(value) {
+        setDate(value)
         console.log(value)
     }
     function handleDateToChange(value) {
@@ -59,12 +62,32 @@ const TempLineChart = ({
         console.log(value)
     }
 
+    useEffect(() => {
+        console.log("Setting temps")
+        axiosInstance.get(`/temps?device=${deviceId}`).then(
+            response => {setRawTemps(response.data.temps)}
+        )
+    }, [deviceId]);
+
     function handleSearch(){
-        axiosInstance.get(`/temps?dateFrom=${dateFrom}&dateTo=${dateTo}&device=${deviceId}`)
+        axiosInstance.get(`/temps?dateFrom=${date}&device=${deviceId}`)
             .then(response => {
-                console.log(response.data)
-                response.data.forEach((temp) => {console.log(temp)})
-            })
+                if (Array.isArray(response.data.temps)) {
+                    console.log(response.data.temps)
+                    const tempsTimestamps = response.data.temps.map(temp => temp.timestamp);
+                    const temps = response.data.temps.map(temp => temp.payload.temp);
+                    console.log(temps)
+                    setTemperatures(temps)
+                    // const time = new Date(timestamp).toISOString().split('T')[1].split('Z')[0];
+                    setTempsTimestamp(tempsTimestamps);
+                    console.log("TIMESTAMPS",tempsTimestamps)
+                } else {
+                    console.error("response.data is not an array:", response.data);
+                }
+            }).catch(error => {
+            // Handle error
+            console.error('Caught Error', error);
+        });
     }
 
     return(
@@ -78,33 +101,35 @@ const TempLineChart = ({
                     p={2}
                 >
                     <DatePicker
-                        label="Date From"
-                        value={dateFrom}
-                        onChange={handleDateFromChange}
+                        label="Date"
+                        value={date}
+                        onChange={handleDateChange}
                     />
-                    <DatePicker
-                        label="Date To"
-                        value={dateTo}
-                        onChange={handleDateToChange}
-                    />
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={interval}
-                        onChange={handleChange}
-                        sx={{width:120}}
-                    >
-                        <MenuItem value={"day"}>Day</MenuItem>
-                        <MenuItem value={"hour"}>Hour</MenuItem>
-                        <MenuItem value={"quarter"}>15 min</MenuItem>
-                    </Select>
+                    {/*<DatePicker*/}
+                    {/*    label="Date To"*/}
+                    {/*    value={dateTo}*/}
+                    {/*    onChange={handleDateToChange}*/}
+                    {/*/>*/}
+                    {/*<Select*/}
+                    {/*    labelId="demo-simple-select-label"*/}
+                    {/*    id="demo-simple-select"*/}
+                    {/*    value={interval}*/}
+                    {/*    onChange={handleChange}*/}
+                    {/*    sx={{width:120}}*/}
+                    {/*>*/}
+                    {/*    <MenuItem value={"day"}>Day</MenuItem>*/}
+                    {/*    <MenuItem value={"hour"}>Hour</MenuItem>*/}
+                    {/*    <MenuItem value={"quarter"}>15 min</MenuItem>*/}
+                    {/*</Select>*/}
                     <IconButton onClick={handleSearch}><SearchIcon/></IconButton>
                 </Box>
-                <LineChart
-                    xAxis={[{ scaleType: 'point', data: temperaturesIndex}]}
+                <>
+                { temperatures.length !== 0 ? <LineChart
+                    xAxis={[{scaleType: 'point', data: tempsTimestamp}]}
                     series={[{data: temperatures}]}
                     height={400}
-                />
+                /> : <p>No temperatures found</p>}
+                </>
             </LocalizationProvider>
     </div>
     )

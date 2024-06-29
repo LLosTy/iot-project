@@ -34,10 +34,10 @@ const AreaPage = () => {
         }
         if (area.hardwareId) {
             // GetTempsByDevice(area.hardwareId).then((temps) => {setTemps(temps)})
-            console.log("Setting temps")
-            axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
-                response => {setTemps(response.data.temps)}
-            )
+            // console.log("Setting temps")
+            // axiosInstance.get(`/temps?device=${area.hardwareId}`).then(
+            //     response => {setTemps(response.data.temps)}
+            // )
             // setTemps(rawTemps)
         }
     }, [id, area])
@@ -49,7 +49,9 @@ const AreaPage = () => {
     return (
         <div>
             <h1>{area.areaName}</h1>
-            {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} deviceId={area.hardwareId} /> : <div>No temps</div>}
+            {/*<TempLineChart rawTemperatures={temps} deviceId={area.hardwareId} />*/}
+            <TempLineChart deviceId={area.hardwareId} />
+
             <Viewers viewers={area.viewers} areaId={id} />
         </div>
     )
