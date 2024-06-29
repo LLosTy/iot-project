@@ -1,4 +1,4 @@
-'use server'
+'use client'
 import axiosInstance from "../../axiosInstance"
 
 export const CreateArea = async (session, areaData) => {

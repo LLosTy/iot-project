@@ -20,6 +20,7 @@ import AlertsDrawer from '../../../_components/AlertsDrawer';
 import ThresholdModal from '../../../_components/ThresholdModal';
 import { GetArea } from '../../../_lib/actions/areas'; 
 import { GetTempsByDevice } from '../../../_lib/actions/temps'; 
+import axiosInstance from '../../../axiosInstance';
 
 
 const AreaPage = () => {
@@ -36,18 +37,25 @@ const AreaPage = () => {
     const isLoadding = status === "loading"
 
     useEffect(() => {
-        const fetchArea = async () => {
-          if (id && session) {
-            try {
-              const areaData = await GetArea(session, id);
-              setArea(areaData);
-            } catch (error) {
-              console.error('Failed to fetch area', error);
-            }
-          }
-        };
-        fetchArea();
-      }, [session, id]);
+      if (id && area.length === 0 && session) {
+        console.log(id);
+        axiosInstance.get('/area/getArea', {
+          headers: {
+            Authorization: `Bearer ${session.user.token}`,
+          },
+          params: {
+            areaId: id,
+          },
+        })
+          .then(response => {
+            console.log(response.data);
+            setArea(response.data);
+          })
+          .catch(error => {
+            console.error('Caught Error', error);
+          });
+      }
+    }, [session, id, area]);
 
       const getTemps = async () => {
         if (area && area.hardwareId && !isLoading && session) {

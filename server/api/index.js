@@ -8,6 +8,15 @@ const port = process.env.PORT
 const hostname = process.env.EXPRESS_URL
 app.use(express.json())
 
+app.use(
+    cors({
+        //origin: process.env.EXPRESS_URL,
+        origin: "http://localhost:3000",
+        methods: 'GET,POST,PUT,DELETE',
+        credentials: true,
+    })
+);
+
 const deviceRouter = require('./routes/devices')
 const tempsRouter = require('./routes/temperatures')
 const areaRouter = require("./routes/area")
@@ -16,7 +25,7 @@ const userRouter = require("./routes/users")
 
 app.use('/devices', deviceRouter)
 app.use('/temps', tempsRouter)
-app.use('/areas',areaRouter)
+app.use('/area',areaRouter)
 app.use("/gateways", gatewayRouter)
 app.use("/users", userRouter)
 
@@ -25,15 +34,7 @@ app.use("/users", userRouter)
 // }));
 
 
-app.use(
-    cors({
-        origin: process.env.EXPRESS_URL,
-        methods: 'GET,POST,PUT,DELETE',
-        allowedHeaders: 'Content-Type,Authorization',
-        credentials: true,
-    })
-);
-app.set("trust proxy", 1);
+
 
 
 const mongoose = require('mongoose')

@@ -23,7 +23,11 @@ const ThresholdModal = ({ area, session, open, onClose, setArea }) => {
         thresholdMax,
         thresholdMin,
       };
-      await SetThreshold(session, thresholdData);
+      await axiosInstance.put('/areas/setThreshold', thresholdData, {
+        headers: {
+          Authorization: `Bearer ${session.user.token}`,
+        },
+      });
 
       setArea({
         ...area,
