@@ -15,7 +15,7 @@ if (process.env.NEXT_PUBLIC_RUN === "dev") {
     });
 } else {
     axiosInstance = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_URL+":"+process.env.NEXT_PUBLIC_PORT+"/"
+        baseURL: process.env.NEXT_PUBLIC_API_URL
         ,
         headers: {
             'Content-Type': 'application/json',
