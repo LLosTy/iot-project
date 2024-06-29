@@ -34,10 +34,11 @@ const AreaPage = () => {
     const params = useParams()
     const { data:session, status} = useSession()
     const { id } = params
-    const isLoadding = status === "loading"
+    const isLoading = status === "loading"
+    const isOwner = session?.user?.id === area?.ownerId;
 
     useEffect(() => {
-      if (id && area.length === 0 && session) {
+      if (id && area.length === 0 && session && !isLoading) {
         console.log(id);
         axiosInstance.get('/area/getArea', {
           headers: {
@@ -57,16 +58,20 @@ const AreaPage = () => {
       }
     }, [session, id, area]);
 
-      const getTemps = async () => {
-        if (area && area.hardwareId && !isLoading && session) {
-          try {
-            const rawTemps = await GetTempsByDevice(session, area.hardwareId);
-            setTemps(rawTemps);
-          } catch (error) {
-            console.error('Failed to fetch temperatures', error);
-          }
+    const getTemps = async () => {
+      if (area && area.hardwareId && session && !isLoading) {
+        try {
+          const rawTemps = await GetTempsByDevice(session, area.hardwareId);
+          setTemps(rawTemps);
+        } catch (error) {
+          console.error('Failed to fetch temperatures', error);
         }
-      };
+      }
+    };
+  
+    useEffect(() => {
+      getTemps();
+    }, [area, session, isLoading]);
 
     const toggleDrawer = (open) => () => {
         setDrawerOpen(open);
@@ -140,14 +145,23 @@ const AreaPage = () => {
                     Min Threshold: {area.thresholdMin}°C
                     </Typography>
                 </Box>
+                {isOwner ?
                 <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setThresholdModalOpen(true)}
-                    style={{ marginBottom: '16px' }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setThresholdModalOpen(true)}
+                  style={{ marginBottom: '16px' }}
                 >
-                    Change Thresholds
+                  Change Thresholds
                 </Button>
+              : <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setThresholdModalOpen(true)}
+              style={{ marginBottom: '16px' }}
+            >
+              Change Thresholds
+            </Button>}
 
                 <AlertsDrawer
                     area={area}

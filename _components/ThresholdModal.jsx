@@ -1,6 +1,4 @@
-// components/ThresholdModal.jsx
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -8,22 +6,35 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Button
+  Button,
+  Typography
 } from '@mui/material';
-import { SetThreshold } from '../_lib/actions/areas'; // Import the SetThreshold function
+import axiosInstance from '../axiosInstance'; // Ensure correct import path
 
 const ThresholdModal = ({ area, session, open, onClose, setArea }) => {
   const [thresholdMax, setThresholdMax] = useState(area.thresholdMax);
   const [thresholdMin, setThresholdMin] = useState(area.thresholdMin);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setThresholdMax(area.thresholdMax);
+    setThresholdMin(area.thresholdMin);
+  }, [area]);
 
   const handleThresholdChange = async () => {
+    if (thresholdMin >= thresholdMax) {
+      setError('Invalid threshold!!');
+      return;
+    }
+
     try {
       const thresholdData = {
         areaId: area._id,
-        thresholdMax,
-        thresholdMin,
+        userId: session.user.id,
+        newMax: thresholdMax,
+        newMin: thresholdMin,
       };
-      await axiosInstance.put('/areas/setThreshold', thresholdData, {
+      await axiosInstance.put('/area/setThreshold', thresholdData, {
         headers: {
           Authorization: `Bearer ${session.user.token}`,
         },
@@ -47,6 +58,7 @@ const ThresholdModal = ({ area, session, open, onClose, setArea }) => {
         <DialogContentText>
           Please enter the new threshold values.
         </DialogContentText>
+        {error && <Typography color="error">{error}</Typography>}
         <TextField
           autoFocus
           margin="dense"
@@ -55,7 +67,7 @@ const ThresholdModal = ({ area, session, open, onClose, setArea }) => {
           fullWidth
           variant="standard"
           value={thresholdMax}
-          onChange={(e) => setThresholdMax(e.target.value)}
+          onChange={(e) => setThresholdMax(Number(e.target.value))}
         />
         <TextField
           margin="dense"
@@ -64,7 +76,7 @@ const ThresholdModal = ({ area, session, open, onClose, setArea }) => {
           fullWidth
           variant="standard"
           value={thresholdMin}
-          onChange={(e) => setThresholdMin(e.target.value)}
+          onChange={(e) => setThresholdMin(Number(e.target.value))}
         />
       </DialogContent>
       <DialogActions>

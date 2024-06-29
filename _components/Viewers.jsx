@@ -67,7 +67,7 @@ const Viewers = ({viewers :initialViewers , areaId}) => {
         //TODO axios Delete call to BE
     };
 
-    if (Array.isArray(viewers)) {
+    if (viewers && Array.isArray(viewers)) {
         return (
             <Grid item xs={12} md={6}>
                 <List sx={style}>

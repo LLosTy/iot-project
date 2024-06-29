@@ -211,8 +211,9 @@ router.put('/removeViewer', verifyUserToken, async(req,res) => {
     }
 })
 
-router.patch('/setThreshold', verifyUserToken, async(req,res) => {
-    if (req.body.areaId && req.body.userId && (req.body.newMin || req.body,newMax)){
+//TODO: Set Thresholds
+router.put('/setThreshold', verifyUserToken, async(req,res) => {
+    if (req.body.areaId && req.body.userId && (req.body.newMin || req.body.newMax)){
         try{
             const area = await Area.findOneAndUpdate({
                 _id: req.body.areaId,
@@ -237,7 +238,7 @@ router.patch('/setThreshold', verifyUserToken, async(req,res) => {
 //TODO Set up websocket to fetch new data from temps based on hardwareID
 
 //TODO Set up acknowledge logic
-router.patch('/ackowledge', verifyUserToken, async(req, res) => {
+router.put('/ackowledge', verifyUserToken, async(req, res) => {
     if (req.body.areaId && req.body.userId && req.body.acknowledged){
         try{
             const area = await Area.findOneAndUpdate({

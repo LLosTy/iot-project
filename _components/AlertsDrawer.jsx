@@ -12,31 +12,30 @@ import { format } from 'date-fns';
 import { AcknowledgeArea } from '../_lib/actions/areas'; // Import the AcknowledgeArea function
 
 const AlertsDrawer = ({ area, drawerOpen, toggleDrawer, session, setArea }) => {
-  const handleAcknowledge = async () => {
-    const updatedNotification = {
-      ...area.notifications.notification,
-      acknowledged: !area.notifications.notification.acknowledged,
-    };
+  const handleAcknowledge = async (index) => {
+    const updatedNotifications = [...area.notifications];
+    updatedNotifications[index].acknowledged = !updatedNotifications[index].acknowledged;
 
     try {
-      const acknowledgeData = {
+      await axiosInstance.put('/area/acknowledge', {
         areaId: area._id,
-        userId: session.user.id,
-        acknowledged: updatedNotification.acknowledged,
-      };
-
-      await AcknowledgeArea(session, acknowledgeData);
+        notificationIndex: index,
+        acknowledged: updatedNotifications[index].acknowledged,
+      }, {
+        headers: {
+          Authorization: `Bearer ${session.user.token}`,
+        },
+      });
 
       setArea({
         ...area,
-        notifications: {
-          notification: updatedNotification,
-        },
+        notifications: updatedNotifications,
       });
     } catch (error) {
       console.error('Failed to update notification', error);
     }
   };
+
 
   return (
     <Drawer
