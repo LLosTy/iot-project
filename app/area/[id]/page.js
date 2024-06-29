@@ -49,7 +49,7 @@ const AreaPage = () => {
     return (
         <div>
             <h1>{area.areaName}</h1>
-            {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} /> : <div>No temps</div>}
+            {temps.length !== 0 ? <TempLineChart rawTemperatures={temps} deviceId={area.hardwareId} /> : <div>No temps</div>}
             <Viewers viewers={area.viewers} areaId={id} />
         </div>
     )
