@@ -31,7 +31,7 @@ const AlertPopUp = () => {
                     areas.forEach(area => {
                         const recentNotification = area.notifications
                             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-                        if (recentNotification && (!newNotification || new Date(recentNotification.timestamp) > new Date(newNotification.timestamp))) {
+                        if (recentNotification && !recentNotification.acknowledged && (!newNotification || new Date(recentNotification.timestamp) > new Date(newNotification.timestamp))) {
                             setNewNotification({ ...recentNotification, areaName: area.areaName });
                             setOpen(true);
                             setShownNotification(true);
