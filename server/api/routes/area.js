@@ -238,26 +238,28 @@ router.put('/setThreshold', verifyUserToken, async(req,res) => {
 //TODO Set up websocket to fetch new data from temps based on hardwareID
 
 //TODO Set up acknowledge logic
-router.put('/ackowledge', verifyUserToken, async(req, res) => {
-    if (req.body.areaId && req.body.userId && req.body.acknowledged){
-        try{
-            const area = await Area.findOneAndUpdate({
-                _id: req.body.areaId,
-                ownerId: req.body.userId,
-            }, { acknowledged: req.body.acknowledged }, {new:true, runValidators: true })
+router.put('/acknowledge', verifyUserToken, async(req, res) => {
+    const { areaId, notificationIndex, acknowledged } = req.body;
 
-            if(area){
-                res.status(200).json({message: area})
-            }else{
-                res.status(409).json({message: "Could not find area"})
+    if (areaId && notificationIndex !== undefined && typeof acknowledged === 'boolean') {
+        try {
+            const area = await Area.findOne({ _id: areaId });
+
+            if (!area) {
+                return res.status(404).json({ message: 'Area not found' });
             }
-        }catch(error){
-            console.log(error.message)
-            res.status(500).json({message:"Internal server error: " + error.message})
-        }
-    }else{
-        res.status(409).json({message: "Please specify areaId, userId and acknowledged"})
-    }
-})
 
+            area.notifications[notificationIndex].acknowledged = acknowledged;
+
+            await area.save();
+
+            res.status(200).json({ message: 'Notification acknowledged', area });
+        } catch (error) {
+            console.log(error.message);
+            res.status(500).json({ message: 'Internal server error: ' + error.message });
+        }
+    } else {
+        res.status(400).json({ message: 'Please specify areaId, notificationIndex, and acknowledged' });
+    }
+});
 module.exports = router
