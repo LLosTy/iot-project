@@ -3,6 +3,7 @@ import {AppBar, Box, Button, Container, IconButton, Toolbar, Typography} from "@
 import Link from "next/link";
 import MemoryIcon from '@mui/icons-material/Memory';
 import AuthContext from './_auth'
+import AlertPopUp from "../_components/AlertPopUp";
 
 const inter = Inter({ subsets: ["latin"] });
 import '../styles/globals.css';
@@ -21,60 +22,60 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
       {/* Layout UI */}
       <AuthContext>
-      <Box sx={{ flexGrow: 1 ,m:0}}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
+        <Box sx={{ flexGrow: 1 ,m:0}}>
+            <AppBar position="static">
+            <Toolbar>
+                <IconButton
+                    size="large"
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    sx={{ mr: 2 }}
+                >
+                </IconButton>
+                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                    <a href={'/'}>
+                        IoTio
+                        <MemoryIcon/>
+                    </a>
+
+                </Typography>
+
+
+                {/*<Link href={'/temps'}>*/}
+                    <Button variant="Outlined" href={'/temps'}>Temps</Button>
+                    {/*Temps*/}
+                {/*</Link>*/}
+
+                {/*<Link href={'/area'}>*/}
+                    <Button variant="Outlined" href={'/myAreas'}>My Areas</Button>
+                    {/*Temps*/}
+                {/*</Link>*/}
+
+                {/*<Link href={'/device'}>*/}
+                    <Button variant="Outlined" href={'/device'}>Devices</Button>
+                    {/*Temps*/}
+                {/*</Link>*/}
+
+                {/*<Link href={'/api/auth/signout'}>*/}
+                    <Button variant="Outlined" href={'/api/auth/signout'}>Signout</Button>
+                    {/*Signout*/}
+                {/*</Link>*/}
+
+            </Toolbar>
+            </AppBar>
+        </Box>
+        <Container
+                component="main"
+                style={{ flex: 1 }}
+                sx={{
+                    mt: 8,
+                    mb: 2,
+                }}
             >
-            </IconButton>
-              <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                  <a href={'/'}>
-                      IoTio
-                      <MemoryIcon/>
-                  </a>
-
-              </Typography>
-
-
-              {/*<Link href={'/temps'}>*/}
-                  <Button variant="Outlined" href={'/temps'}>Temps</Button>
-                  {/*Temps*/}
-              {/*</Link>*/}
-
-              {/*<Link href={'/area'}>*/}
-                  <Button variant="Outlined" href={'/myAreas'}>My Areas</Button>
-                  {/*Temps*/}
-              {/*</Link>*/}
-
-              {/*<Link href={'/device'}>*/}
-                  <Button variant="Outlined" href={'/device'}>Devices</Button>
-                  {/*Temps*/}
-              {/*</Link>*/}
-
-              {/*<Link href={'/api/auth/signout'}>*/}
-                  <Button variant="Outlined" href={'/api/auth/signout'}>Signout</Button>
-                  {/*Signout*/}
-              {/*</Link>*/}
-
-          </Toolbar>
-        </AppBar>
-      </Box>
-          <Container
-              component="main"
-              style={{ flex: 1 }}
-              sx={{
-                  mt: 8,
-                  mb: 2,
-              }}
-          >
-              <Box>{children}</Box>
-          </Container>
-
+            <Box>{children}</Box>
+        </Container>
+        <AlertPopUp/>
 
       </AuthContext>
       </body>
