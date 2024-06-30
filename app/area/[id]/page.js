@@ -15,8 +15,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import AlertIcon from '@mui/icons-material/Warning';
-import AlertsDrawer from '../../../_components/AlertsDrawer';
 import ThresholdModal from '../../../_components/ThresholdModal';
 import { GetArea } from '../../../_lib/actions/areas'; 
 import { GetTempsByDevice } from '../../../_lib/actions/temps'; 
@@ -28,7 +26,6 @@ const AreaPage = () => {
     const [temps, setTemps] = useState([])
     const [dateFrom, setDateFrom] = useState(dayjs());
     const [dateTo, setDateTo] = useState(dayjs());
-    const [drawerOpen, setDrawerOpen] = useState(false)
     const [thresholdModalOpen, setThresholdModalOpen] = useState(false);
 
     const params = useParams()
@@ -83,7 +80,7 @@ const AreaPage = () => {
             console.error('Caught Error', error);
           });
       }
-    }, [session, id, area]);
+    }, [session, isLoading, id, area]);
 
     // const getTemps = async () => {
     //   if (area && area.hardwareId && session && !isLoading) {
@@ -100,10 +97,6 @@ const AreaPage = () => {
     //   getTemps();
     // }, [area, session, isLoading]);
 
-    const toggleDrawer = (open) => () => {
-        setDrawerOpen(open);
-      };
-
       if (!area) {
         return <div>Loading...</div>;
       }
@@ -116,15 +109,6 @@ const AreaPage = () => {
 
             <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                 <div style={{ marginLeft: 20, display: 'flex', flexDirection: 'column' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={toggleDrawer(true)}
-                    startIcon={<AlertIcon />}
-                    style={{ marginBottom: '16px' }}
-                >
-                    Alerts Drawer
-                </Button>
                 <Box
                     sx={{
                     width: '200px',
@@ -153,23 +137,15 @@ const AreaPage = () => {
                     </Typography>
                 </Box>
                 {isOwner ?
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setThresholdModalOpen(true)}
-                    style={{ marginBottom: '16px' }}
-                  >
-                    Change Thresholds
-                  </Button>
-                : null}
-
-                <AlertsDrawer
-                    area={area}
-                    drawerOpen={drawerOpen}
-                    toggleDrawer={toggleDrawer}
-                    session={session}
-                    setArea={setArea}
-                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setThresholdModalOpen(true)}
+                  style={{ marginBottom: '16px' }}
+                >
+                  Change Thresholds
+                </Button>
+              : null}
                 </div>
             </div>
 
