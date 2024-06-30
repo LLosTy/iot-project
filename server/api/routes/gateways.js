@@ -1,6 +1,7 @@
 const express = require('express')
 const Gateway = require("../../../_models/gateway.js")
 const Temperature = require('../../../_models/temperature.js')
+const Area = require('../../../_models/area.js')
 const router = express.Router()
 const { generateGatewayToken } = require("../../../_lib/hash.js")
 const {verifyGatewayToken, basicGatewayAuthMiddleware} = require("../../../authMiddleware.js")
@@ -73,10 +74,6 @@ router.delete('/remove', verifyGatewayToken, async (req, res) => {
 
 router.post('/get-comms-token', basicGatewayAuthMiddleware, async (req, res) => {
     const { login_name, login_pwd } = req;
-    console.log(req)
-
-    console.log("Trying to get Gateway token");
-    console.log(login_name, login_pwd);
 
     if (login_name && login_pwd) {
         try {
@@ -152,6 +149,7 @@ router.patch('/update', verifyGatewayToken, async (req, res) => {
 
 router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
     const { _id, hardwareIds, temperatures } = req.body;
+    console.log(req.body)
 
     if (!hardwareIds || !Array.isArray(hardwareIds) || !temperatures || typeof temperatures !== 'object') {
         return res.status(400).json({ error: "Please specify an array of hardwareIds and a valid temperatures object!" });
@@ -177,12 +175,12 @@ router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
         const averageTemperatureRecords = [];
         for (const client_id in temperatures) {
             const { sum, count } = temperatures[client_id];
-            const averageTemp = sum / count;
+            const averageTemp = (sum / count).toFixed(2);
 
             averageTemperatureRecords.push({
                 payload: {
                     client_id: client_id,
-                    temp: averageTemp.toFixed(2)
+                    temp: averageTemp
                 },
                 timestamp: new Date() // You can use a different timestamp if needed
             });
@@ -190,6 +188,35 @@ router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
             // Add client_id to hardwareIds if not already present
             if (!gateway.hardwareIds.includes(client_id)) {
                 gateway.hardwareIds.push(client_id);
+            }
+
+            // Find the area associated with the hardware ID
+            const area = await Area.findOne({ hardwareId: client_id });
+            if (area) {
+                // Check if the average temperature exceeds the threshold
+                console.log("AREA:::", area)
+                if (averageTemp < area.thresholdMin || averageTemp > area.thresholdMax) {
+                    // Check for notifications within the last 4 hours
+                    const recentNotification = area.notifications.sort((a, b) => b.timestamp - a.timestamp)[0];
+                    const now = new Date();
+                    const fourHoursAgo = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+                    console.log("AREA SEARCH:::", area.notifications.find(notification => new Date(notification.timestamp) >= fourHoursAgo))
+                    console.log("RECENT NOTIF:::", recentNotification)
+
+                    if (!recentNotification || recentNotification.acknowledged || new Date(recentNotification.timestamp) < fourHoursAgo) {
+                        // Add a new notification
+                        console.log("AREA NOTIFICATION PUSH:::")
+
+                        area.notifications.push({
+                            timestamp: now,
+                            value: averageTemp,
+                            thresholdMin: area.thresholdMin,
+                            thresholdMax: area.thresholdMax,
+                            acknowledged: false
+                        });
+                        await area.save();
+                    }
+                }
             }
         }
 
@@ -207,5 +234,9 @@ router.post('/add-temperatures', verifyGatewayToken, async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+router.get("/test", verifyGatewayToken, async(req, res) => {
+    res.json({message: "You sure verified yourself"})
+})
 
 module.exports = router;
