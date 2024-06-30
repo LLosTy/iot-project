@@ -1,6 +1,6 @@
 // components/AlertsDrawer.jsx
-
-import React from 'react';
+"use client"
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Typography,
@@ -9,33 +9,59 @@ import {
   Drawer
 } from '@mui/material';
 import { format } from 'date-fns';
-import { AcknowledgeArea } from '../_lib/actions/areas'; // Import the AcknowledgeArea function
+import axiosInstance from '../axiosInstance'; // Ensure correct import path
+import { useSession } from 'next-auth/react';
 
-const AlertsDrawer = ({ area, drawerOpen, toggleDrawer, session, setArea }) => {
-  const handleAcknowledge = async (index) => {
-    const updatedNotifications = [...area.notifications];
-    updatedNotifications[index].acknowledged = !updatedNotifications[index].acknowledged;
+
+const AlertsDrawer = ({ drawerOpen, toggleDrawer }) => {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
+  const isLoading = status === "loading";
+
+  const [areas, setAreas] = useState([]);
+
+  useEffect(() => {
+    const fetchAreas = async () => {
+      if (!isLoading && userId) {
+        try {
+          const response = await axiosInstance.get('/area/getUserAreas', {
+            headers: {
+              Authorization: `Bearer ${session.user.token}`,
+            },
+            params: { userId },
+          });
+          setAreas(response.data);
+        } catch (error) {
+          console.error('Error fetching areas:', error);
+        }
+      }
+    };
+
+    fetchAreas();
+  }, [userId, isLoading, session]);
+
+  const handleAcknowledge = async (areaIndex, notificationIndex, acknowledged) => {
+    const updatedAreas = [...areas];
+    updatedAreas[areaIndex].notifications[notificationIndex].acknowledged = acknowledged;
 
     try {
       await axiosInstance.put('/area/acknowledge', {
-        areaId: area._id,
-        notificationIndex: index,
-        acknowledged: updatedNotifications[index].acknowledged,
+        areaId: updatedAreas[areaIndex]._id,
+        notificationIndex: notificationIndex,
+        acknowledged: acknowledged,
       }, {
         headers: {
           Authorization: `Bearer ${session.user.token}`,
         },
       });
 
-      setArea({
-        ...area,
-        notifications: updatedNotifications,
-      });
+      setAreas(updatedAreas);
     } catch (error) {
       console.error('Failed to update notification', error);
     }
   };
-
+  // Uncomment this line to limit the display to the last 10 notifications
+  // const displayedNotifications = area.notifications.slice(-10).reverse();
 
   return (
     <Drawer
@@ -44,32 +70,56 @@ const AlertsDrawer = ({ area, drawerOpen, toggleDrawer, session, setArea }) => {
       onClose={toggleDrawer(false)}
     >
       <Box
-        sx={{ width: 250 }}
+        sx={{ width: 350 }}
         role="presentation"
-        onClick={toggleDrawer(false)}
-        onKeyDown={toggleDrawer(false)}
       >
         <Typography variant="h6" sx={{ my: 2, mx: 2 }}>
           Alerts
         </Typography>
         <Divider />
-        <Box sx={{ p: 2 }}>
-          {area.notifications && area.notifications.notification ? (
-            <Box sx={{ mb: 2 }}>
-              <Typography>
-                {`Timestamp: ${format(new Date(area.notifications.notification.timestamp), 'yyyy-MM-dd HH:mm:ss')}`}
-              </Typography>
-              <Typography>
-                {`Acknowledged: ${area.notifications.notification.acknowledged ? 'Yes' : 'No'}`}
-              </Typography>
-              <Button
-                variant="contained"
-                color={area.notifications.notification.acknowledged ? "secondary" : "primary"}
-                onClick={handleAcknowledge}
-              >
-                {area.notifications.notification.acknowledged ? "Unacknowledge" : "Acknowledge"}
-              </Button>
-            </Box>
+        <Box sx={{ p: 2, maxHeight: '80vh', overflowY: 'auto' }}>
+          {areas.length > 0 ? (
+            areas.map((area, areaIndex) => (
+              <Box key={area._id} sx={{ mb: 2 }}>
+                {area.notifications.map((notification, notificationIndex) => (
+                  <Box key={notificationIndex} sx={{ mb: 2 }}>
+                    <Typography variant="h6">
+                      {area.areaName}
+                    </Typography>
+                    <Typography>
+                      {`Timestamp: ${format(new Date(notification.timestamp), 'yyyy-MM-dd HH:mm:ss')}`}
+                    </Typography>
+                    <Typography>
+                      {`Temperature: ${notification.value}°C`}
+                    </Typography>
+                    <Typography>
+                      {`Threshold Min: ${notification.thresholdMin}°C`}
+                    </Typography>
+                    <Typography>
+                      {`Threshold Max: ${notification.thresholdMax}°C`}
+                    </Typography>
+                    <Typography>
+                      {`Acknowledged: ${notification.acknowledged ? 'Yes' : 'No'}`}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color={notification.acknowledged ? "secondary" : "primary"}
+                      onClick={() => handleAcknowledge(areaIndex, notificationIndex, !notification.acknowledged)}
+                      sx={{
+                        mt: 1,
+                        backgroundColor: notification.acknowledged ? '#d32f2f' : '#1976d2', // Matching primary and secondary colors
+                        '&:hover': {
+                          backgroundColor: notification.acknowledged ? '#c62828' : '#1565c0', // Matching hover colors
+                        },
+                      }}
+                    >
+                      {notification.acknowledged ? "Unacknowledge" : "Acknowledge"}
+                    </Button>
+                    <Divider sx={{ my: 1 }} />
+                  </Box>
+                ))}
+              </Box>
+            ))
           ) : (
             <Typography>No alerts</Typography>
           )}
