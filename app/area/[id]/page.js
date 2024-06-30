@@ -153,22 +153,15 @@ const AreaPage = () => {
                     </Typography>
                 </Box>
                 {isOwner ?
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setThresholdModalOpen(true)}
-                  style={{ marginBottom: '16px' }}
-                >
-                  Change Thresholds
-                </Button>
-              : <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setThresholdModalOpen(true)}
-              style={{ marginBottom: '16px' }}
-            >
-              Change Thresholds
-            </Button>}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setThresholdModalOpen(true)}
+                    style={{ marginBottom: '16px' }}
+                  >
+                    Change Thresholds
+                  </Button>
+                : null}
 
                 <AlertsDrawer
                     area={area}
